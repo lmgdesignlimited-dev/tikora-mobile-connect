@@ -7,16 +7,10 @@ import { MobileNavigation } from '@/components/layout/MobileNavigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  TrendingUp, 
-  Users, 
-  DollarSign, 
-  Star, 
-  Music, 
-  Camera,
-  Building,
-  Plus
-} from 'lucide-react';
+import { ArtistDashboard } from '@/components/dashboard/ArtistDashboard';
+import { InfluencerDashboard } from '@/components/dashboard/InfluencerDashboard';
+import { BusinessDashboard } from '@/components/dashboard/BusinessDashboard';
+import { Music, Camera, Building, Users } from 'lucide-react';
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -95,160 +89,25 @@ export default function Dashboard() {
     }
   };
 
+  const renderDashboard = () => {
+    switch (profile?.user_type) {
+      case 'artist':
+        return <ArtistDashboard />;
+      case 'influencer':
+        return <InfluencerDashboard />;
+      case 'business':
+        return <BusinessDashboard />;
+      default:
+        return <div>Loading...</div>;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
       <main className="container mx-auto px-4 py-6 pb-20">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex items-center gap-2">
-              {getUserTypeIcon(profile?.user_type)}
-              <h1 className="text-2xl font-bold">
-                Welcome back, {profile?.full_name || 'User'}!
-              </h1>
-            </div>
-            <Badge className={getUserTypeColor(profile?.user_type)}>
-              {profile?.user_type?.charAt(0).toUpperCase() + profile?.user_type?.slice(1)}
-            </Badge>
-          </div>
-          <p className="text-muted-foreground">
-            Here's what's happening with your Tikora account today.
-          </p>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-primary" />
-                Campaigns
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-2xl font-bold">{stats.campaigns}</div>
-              <p className="text-xs text-muted-foreground">
-                {profile?.user_type === 'influencer' ? 'Completed' : 'Active'}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-success" />
-                Earnings
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-2xl font-bold">₦{stats.earnings.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">Total earned</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Star className="h-4 w-4 text-warning" />
-                Rating
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-2xl font-bold">{stats.rating.toFixed(1)}</div>
-              <p className="text-xs text-muted-foreground">Average rating</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Users className="h-4 w-4 text-primary" />
-                Followers
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-2xl font-bold">{stats.followers.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">Total followers</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Quick Actions */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {profile?.user_type === 'artist' && (
-                <Button variant="gradient" className="justify-start gap-3 h-auto p-4">
-                  <Plus className="h-5 w-5" />
-                  <div className="text-left">
-                    <div className="font-medium">Promote Your Song</div>
-                    <div className="text-sm opacity-90">Get influencers to use your music</div>
-                  </div>
-                </Button>
-              )}
-              
-              {profile?.user_type === 'business' && (
-                <Button variant="gradient" className="justify-start gap-3 h-auto p-4">
-                  <Plus className="h-5 w-5" />
-                  <div className="text-left">
-                    <div className="font-medium">Create Campaign</div>
-                    <div className="text-sm opacity-90">Launch your next marketing campaign</div>
-                  </div>
-                </Button>
-              )}
-              
-              {profile?.user_type === 'influencer' && (
-                <Button variant="gradient" className="justify-start gap-3 h-auto p-4">
-                  <Plus className="h-5 w-5" />
-                  <div className="text-left">
-                    <div className="font-medium">Browse Campaigns</div>
-                    <div className="text-sm opacity-90">Find new opportunities to earn</div>
-                  </div>
-                </Button>
-              )}
-              
-              <Button variant="outline" className="justify-start gap-3 h-auto p-4">
-                <DollarSign className="h-5 w-5" />
-                <div className="text-left">
-                  <div className="font-medium">Fund Wallet</div>
-                  <div className="text-sm text-muted-foreground">Add money to your account</div>
-                </div>
-              </Button>
-              
-              <Button variant="outline" className="justify-start gap-3 h-auto p-4">
-                <Star className="h-5 w-5" />
-                <div className="text-left">
-                  <div className="font-medium">View Analytics</div>
-                  <div className="text-sm text-muted-foreground">Track your performance</div>
-                </div>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-12">
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <h3 className="font-medium mb-2">No recent activity</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Start creating campaigns or applying to opportunities to see your activity here.
-              </p>
-              <Button variant="outline">Explore Opportunities</Button>
-            </div>
-          </CardContent>
-        </Card>
+        {renderDashboard()}
       </main>
 
       <MobileNavigation />

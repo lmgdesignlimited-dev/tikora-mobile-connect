@@ -1,0 +1,330 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Camera, 
+  TrendingUp, 
+  DollarSign, 
+  Star,
+  Clock,
+  CheckCircle,
+  Music,
+  Package,
+  Play
+} from 'lucide-react';
+import { toast } from 'sonner';
+
+export function InfluencerDashboard() {
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<any>(null);
+  const [applications, setApplications] = useState([]);
+  const [availableCampaigns, setAvailableCampaigns] = useState([]);
+  const [stats, setStats] = useState({
+    pendingApplications: 0,
+    completedCampaigns: 0,
+    totalEarnings: 0,
+    rating: 0
+  });
+
+  useEffect(() => {
+    if (user) {
+      fetchProfile();
+      fetchApplications();
+      fetchAvailableCampaigns();
+    }
+  }, [user]);
+
+  const fetchProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user?.id)
+        .single();
+
+      if (error) throw error;
+      setProfile(data);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
+  const fetchApplications = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('campaign_applications')
+        .select(`
+          *,
+          campaigns (
+            id,
+            title,
+            campaign_type,
+            song_title,
+            product_name,
+            total_budget,
+            videos_per_influencer
+          )
+        `)
+        .eq('influencer_id', user?.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setApplications(data || []);
+
+      // Calculate stats
+      const pending = data?.filter(a => a.status === 'pending').length || 0;
+      const completed = data?.filter(a => a.status === 'completed').length || 0;
+      const earnings = data?.filter(a => a.status === 'completed').reduce((sum, a) => sum + (a.proposed_rate || 0), 0) || 0;
+      
+      // Get rating from profile since applications don't have ratings
+      const avgRating = profile?.rating || 0;
+
+      setStats({
+        pendingApplications: pending,
+        completedCampaigns: completed,
+        totalEarnings: earnings,
+        rating: avgRating
+      });
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+    }
+  };
+
+  const fetchAvailableCampaigns = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select(`
+          *,
+          profiles!campaigns_creator_id_fkey (
+            full_name,
+            user_type
+          )
+        `)
+        .eq('status', 'active')
+        .not('creator_id', 'eq', user?.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+      
+      // Filter campaigns that user hasn't applied to yet
+      const userApplications = await supabase
+        .from('campaign_applications')
+        .select('campaign_id')
+        .eq('influencer_id', user?.id);
+
+      const appliedCampaignIds = userApplications.data?.map(a => a.campaign_id) || [];
+      const filteredCampaigns = data?.filter(c => !appliedCampaignIds.includes(c.id)) || [];
+      
+      setAvailableCampaigns(filteredCampaigns);
+    } catch (error) {
+      console.error('Error fetching available campaigns:', error);
+    }
+  };
+
+  const handleApplyToCampaign = async (campaignId: string, proposedRate: number) => {
+    try {
+      const { error } = await supabase
+        .from('campaign_applications')
+        .insert({
+          campaign_id: campaignId,
+          influencer_id: user?.id,
+          proposed_rate: proposedRate,
+          status: 'pending'
+        });
+
+      if (error) throw error;
+      
+      toast.success('Application submitted successfully!');
+      fetchApplications();
+      fetchAvailableCampaigns();
+    } catch (error) {
+      console.error('Error applying to campaign:', error);
+      toast.error('Failed to submit application');
+    }
+  };
+
+  const getApplicationStatusColor = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return 'bg-success/10 text-success border-success/20';
+      case 'completed':
+        return 'bg-primary/10 text-primary border-primary/20';
+      case 'rejected':
+        return 'bg-destructive/10 text-destructive border-destructive/20';
+      default:
+        return 'bg-warning/10 text-warning border-warning/20';
+    }
+  };
+
+  const getCampaignIcon = (type: string) => {
+    switch (type) {
+      case 'song_promotion':
+        return <Music className="h-5 w-5" />;
+      case 'product_promotion':
+        return <Package className="h-5 w-5" />;
+      default:
+        return <Play className="h-5 w-5" />;
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Welcome Section */}
+      <div>
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          <Camera className="h-6 w-6 text-primary" />
+          Creator Hub
+        </h1>
+        <p className="text-muted-foreground">
+          Discover campaigns and grow your influence
+        </p>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Clock className="h-4 w-4 text-warning" />
+              Pending
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-bold">{stats.pendingApplications}</div>
+            <p className="text-xs text-muted-foreground">Applications</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-success" />
+              Completed
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-bold">{stats.completedCampaigns}</div>
+            <p className="text-xs text-muted-foreground">Campaigns</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <DollarSign className="h-4 w-4 text-success" />
+              Earnings
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-bold">₦{stats.totalEarnings.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">Total earned</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Star className="h-4 w-4 text-warning" />
+              Rating
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-bold">{stats.rating.toFixed(1)}</div>
+            <p className="text-xs text-muted-foreground">Average rating</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Available Campaigns */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Available Campaigns</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {availableCampaigns.length === 0 ? (
+              <div className="text-center py-8">
+                <TrendingUp className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">No campaigns available</p>
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {availableCampaigns.map((campaign: any) => (
+                  <div
+                    key={campaign.id}
+                    className="p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        {getCampaignIcon(campaign.campaign_type)}
+                        <h4 className="font-medium text-sm">{campaign.title}</h4>
+                      </div>
+                      <Badge variant="outline" className="text-xs">
+                        {campaign.campaign_type.replace('_', ' ')}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
+                      {campaign.description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">
+                        ₦{campaign.budget_per_influencer?.toLocaleString() || 'Negotiable'}
+                      </span>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleApplyToCampaign(campaign.id, campaign.budget_per_influencer || 5000)}
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* My Applications */}
+        <Card>
+          <CardHeader>
+            <CardTitle>My Applications</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {applications.length === 0 ? (
+              <div className="text-center py-8">
+                <Camera className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">No applications yet</p>
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {applications.slice(0, 10).map((application: any) => (
+                  <div
+                    key={application.id}
+                    className="p-3 border rounded-lg"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="font-medium text-sm">{application.campaigns?.title}</h4>
+                      <Badge className={getApplicationStatusColor(application.status)}>
+                        {application.status}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Rate: ₦{application.proposed_rate?.toLocaleString()}</span>
+                      <span>{new Date(application.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
