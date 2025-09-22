@@ -131,8 +131,10 @@ export type Database = {
         Row: {
           budget: number
           budget_per_influencer: number | null
+          campaign_subtype: string | null
           campaign_type: string
           content_guidelines: string | null
+          cost_per_video: number | null
           created_at: string
           creator_id: string
           current_applicants: number | null
@@ -140,6 +142,7 @@ export type Database = {
           description: string
           hashtags: string[] | null
           id: string
+          influencer_tier: string | null
           max_influencers: number | null
           product_details: Json | null
           requirements: string | null
@@ -150,13 +153,18 @@ export type Database = {
           target_demographics: Json | null
           title: string
           updated_at: string
+          videos_approved: number | null
+          videos_requested: number | null
+          videos_submitted: number | null
           visibility: string | null
         }
         Insert: {
           budget: number
           budget_per_influencer?: number | null
+          campaign_subtype?: string | null
           campaign_type: string
           content_guidelines?: string | null
+          cost_per_video?: number | null
           created_at?: string
           creator_id: string
           current_applicants?: number | null
@@ -164,6 +172,7 @@ export type Database = {
           description: string
           hashtags?: string[] | null
           id?: string
+          influencer_tier?: string | null
           max_influencers?: number | null
           product_details?: Json | null
           requirements?: string | null
@@ -174,13 +183,18 @@ export type Database = {
           target_demographics?: Json | null
           title: string
           updated_at?: string
+          videos_approved?: number | null
+          videos_requested?: number | null
+          videos_submitted?: number | null
           visibility?: string | null
         }
         Update: {
           budget?: number
           budget_per_influencer?: number | null
+          campaign_subtype?: string | null
           campaign_type?: string
           content_guidelines?: string | null
+          cost_per_video?: number | null
           created_at?: string
           creator_id?: string
           current_applicants?: number | null
@@ -188,6 +202,7 @@ export type Database = {
           description?: string
           hashtags?: string[] | null
           id?: string
+          influencer_tier?: string | null
           max_influencers?: number | null
           product_details?: Json | null
           requirements?: string | null
@@ -198,6 +213,9 @@ export type Database = {
           target_demographics?: Json | null
           title?: string
           updated_at?: string
+          videos_approved?: number | null
+          videos_requested?: number | null
+          videos_submitted?: number | null
           visibility?: string | null
         }
         Relationships: []
@@ -235,8 +253,47 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_claims: {
+        Row: {
+          admin_notes: string | null
+          claim_type: string
+          created_at: string
+          fee_amount: number
+          id: string
+          status: string | null
+          submission_data: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          claim_type: string
+          created_at?: string
+          fee_amount: number
+          id?: string
+          status?: string | null
+          submission_data?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          claim_type?: string
+          created_at?: string
+          fee_amount?: number
+          id?: string
+          status?: string | null
+          submission_data?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          audiomack_fee: number | null
+          audiomack_status: string | null
+          audiomack_username: string | null
           avatar_url: string | null
           bio: string | null
           city: string | null
@@ -253,6 +310,8 @@ export type Database = {
           phone: string | null
           rating: number | null
           social_links: Json | null
+          tiktok_claim_fee: number | null
+          tiktok_claim_status: string | null
           total_earnings: number | null
           total_spent: number | null
           updated_at: string
@@ -263,6 +322,9 @@ export type Database = {
           wallet_balance: number | null
         }
         Insert: {
+          audiomack_fee?: number | null
+          audiomack_status?: string | null
+          audiomack_username?: string | null
           avatar_url?: string | null
           bio?: string | null
           city?: string | null
@@ -279,6 +341,8 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           social_links?: Json | null
+          tiktok_claim_fee?: number | null
+          tiktok_claim_status?: string | null
           total_earnings?: number | null
           total_spent?: number | null
           updated_at?: string
@@ -289,6 +353,9 @@ export type Database = {
           wallet_balance?: number | null
         }
         Update: {
+          audiomack_fee?: number | null
+          audiomack_status?: string | null
+          audiomack_username?: string | null
           avatar_url?: string | null
           bio?: string | null
           city?: string | null
@@ -305,6 +372,8 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           social_links?: Json | null
+          tiktok_claim_fee?: number | null
+          tiktok_claim_status?: string | null
           total_earnings?: number | null
           total_spent?: number | null
           updated_at?: string
@@ -313,6 +382,51 @@ export type Database = {
           username?: string | null
           verification_status?: string | null
           wallet_balance?: number | null
+        }
+        Relationships: []
+      }
+      video_submissions: {
+        Row: {
+          admin_feedback: string | null
+          approved_date: string | null
+          campaign_id: string
+          created_at: string
+          earnings: number | null
+          id: string
+          influencer_id: string
+          platform: string
+          status: string | null
+          submission_date: string | null
+          updated_at: string
+          video_url: string
+        }
+        Insert: {
+          admin_feedback?: string | null
+          approved_date?: string | null
+          campaign_id: string
+          created_at?: string
+          earnings?: number | null
+          id?: string
+          influencer_id: string
+          platform: string
+          status?: string | null
+          submission_date?: string | null
+          updated_at?: string
+          video_url: string
+        }
+        Update: {
+          admin_feedback?: string | null
+          approved_date?: string | null
+          campaign_id?: string
+          created_at?: string
+          earnings?: number | null
+          id?: string
+          influencer_id?: string
+          platform?: string
+          status?: string | null
+          submission_date?: string | null
+          updated_at?: string
+          video_url?: string
         }
         Relationships: []
       }
