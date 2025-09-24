@@ -24,6 +24,7 @@ export function BusinessDashboard() {
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [campaigns, setCampaigns] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     activeCampaigns: 0,
     totalReach: 0,
@@ -34,10 +35,23 @@ export function BusinessDashboard() {
 
   useEffect(() => {
     if (user) {
-      fetchProfile();
-      fetchCampaigns();
+      loadDashboardData();
     }
-  }, [user]);
+  }, [user?.id]); // Only depend on user.id
+
+  const loadDashboardData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([
+        fetchProfile(),
+        fetchCampaigns()
+      ]);
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchProfile = async () => {
     try {
@@ -45,9 +59,12 @@ export function BusinessDashboard() {
         .from('profiles')
         .select('*')
         .eq('user_id', user?.id)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Profile fetch error:', error);
+        return;
+      }
       setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -128,6 +145,30 @@ export function BusinessDashboard() {
     
     return { approved: approved.length, completed: completed.length };
   };
+
+  // Early return with loading if still loading
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold flex items-center gap-2">
+              <Building className="h-6 w-6 text-primary" />
+              Business Hub
+            </h1>
+            <p className="text-muted-foreground">Loading your dashboard...</p>
+          </div>
+        </div>
+        <div className="animate-pulse">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-24 bg-muted rounded-lg" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

@@ -22,6 +22,7 @@ export function InfluencerDashboard() {
   const [profile, setProfile] = useState<any>(null);
   const [applications, setApplications] = useState([]);
   const [availableCampaigns, setAvailableCampaigns] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     pendingApplications: 0,
     completedCampaigns: 0,
@@ -31,11 +32,24 @@ export function InfluencerDashboard() {
 
   useEffect(() => {
     if (user) {
-      fetchProfile();
-      fetchApplications();
-      fetchAvailableCampaigns();
+      loadDashboardData();
     }
-  }, [user]);
+  }, [user?.id]); // Only depend on user.id
+
+  const loadDashboardData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([
+        fetchProfile(),
+        fetchApplications(),
+        fetchAvailableCampaigns()
+      ]);
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchProfile = async () => {
     try {
@@ -43,9 +57,13 @@ export function InfluencerDashboard() {
         .from('profiles')
         .select('*')
         .eq('user_id', user?.id)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Profile fetch error:', error);
+        return;
+      }
+      
       setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -171,6 +189,30 @@ export function InfluencerDashboard() {
         return <Play className="h-5 w-5" />;
     }
   };
+
+  // Early return with loading if still loading
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold flex items-center gap-2">
+              <Camera className="h-6 w-6 text-primary" />
+              Creator Hub
+            </h1>
+            <p className="text-muted-foreground">Loading your dashboard...</p>
+          </div>
+        </div>
+        <div className="animate-pulse">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-24 bg-muted rounded-lg" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

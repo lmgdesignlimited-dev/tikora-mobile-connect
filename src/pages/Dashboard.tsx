@@ -34,18 +34,24 @@ export default function Dashboard() {
         .from('profiles')
         .select('*')
         .eq('user_id', user?.id)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Profile fetch error:', error);
+        return;
+      }
+      
       setProfile(data);
       
       // Update stats based on profile data
-      setStats({
-        campaigns: data.completed_campaigns || 0,
-        earnings: data.total_earnings || 0,
-        rating: data.rating || 0,
-        followers: data.follower_count || 0,
-      });
+      if (data) {
+        setStats({
+          campaigns: data.completed_campaigns || 0,
+          earnings: data.total_earnings || 0,
+          rating: data.rating || 0,
+          followers: data.follower_count || 0,
+        });
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -90,6 +96,21 @@ export default function Dashboard() {
   };
 
   const renderDashboard = () => {
+    // If profile is null, show a message or default dashboard
+    if (!profile) {
+      return (
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold mb-4">Welcome to Tikora!</h2>
+          <p className="text-muted-foreground mb-4">
+            We're setting up your dashboard. Please refresh the page if this persists.
+          </p>
+          <Button onClick={fetchProfile} variant="outline">
+            Retry Loading
+          </Button>
+        </div>
+      );
+    }
+
     switch (profile?.user_type) {
       case 'artist':
         return <ArtistDashboard />;
@@ -98,7 +119,14 @@ export default function Dashboard() {
       case 'business':
         return <BusinessDashboard />;
       default:
-        return <div>Loading...</div>;
+        return (
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold mb-4">Profile Setup Required</h2>
+            <p className="text-muted-foreground">
+              Please complete your profile setup to access your dashboard.
+            </p>
+          </div>
+        );
     }
   };
 

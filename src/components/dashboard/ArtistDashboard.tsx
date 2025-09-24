@@ -33,6 +33,7 @@ export function ArtistDashboard() {
   const [campaigns, setCampaigns] = useState([]);
   const [claims, setClaims] = useState([]);
   const [videoSubmissions, setVideoSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     activeCampaigns: 0,
     totalViews: 0,
@@ -48,12 +49,25 @@ export function ArtistDashboard() {
 
   useEffect(() => {
     if (user) {
-      fetchProfile();
-      fetchCampaigns();
-      fetchClaims();
-      fetchVideoSubmissions();
+      loadDashboardData();
     }
-  }, [user]);
+  }, [user?.id]); // Only depend on user.id
+
+  const loadDashboardData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([
+        fetchProfile(),
+        fetchCampaigns(),
+        fetchClaims(),
+        fetchVideoSubmissions()
+      ]);
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchProfile = async () => {
     try {
@@ -61,9 +75,13 @@ export function ArtistDashboard() {
         .from('profiles')
         .select('*')
         .eq('user_id', user?.id)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Profile fetch error:', error);
+        return;
+      }
+      
       setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -145,6 +163,27 @@ export function ArtistDashboard() {
       approvedVideos
     });
   };
+
+  // Early return with loading if still loading
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Artist Dashboard</h1>
+            <p className="text-muted-foreground">Loading your dashboard...</p>
+          </div>
+        </div>
+        <div className="animate-pulse">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-24 bg-muted rounded-lg" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleCreateCampaign = () => {
     setShowCreateModal(true);
