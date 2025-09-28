@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
+import { CreateTestUsers } from '@/components/debug/CreateTestUsers';
 import { 
   Music, 
   Camera, 
@@ -88,7 +89,14 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
+        {/* Debug Section - Remove in production */}
+        <section className="py-12 bg-muted/50">
+          <div className="container mx-auto px-4">
+            <CreateTestUsers />
+          </div>
+        </section>
+
+        {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/10 py-20">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
