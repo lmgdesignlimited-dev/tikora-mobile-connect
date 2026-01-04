@@ -37,7 +37,6 @@ export default function Dashboard() {
         .maybeSingle();
 
       if (error) {
-        console.error('Profile fetch error:', error);
         return;
       }
       
@@ -52,8 +51,8 @@ export default function Dashboard() {
           followers: data.follower_count || 0,
         });
       }
-    } catch (error) {
-      console.error('Error fetching profile:', error);
+    } catch {
+      // Silent fail - profile will be null and UI handles gracefully
     }
   };
 

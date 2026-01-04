@@ -559,6 +559,19 @@ export type Database = {
         Args: { profile_row: Database["public"]["Tables"]["profiles"]["Row"] }
         Returns: Json
       }
+      get_user_claims: {
+        Args: { target_user_id: string }
+        Returns: {
+          claim_type: string
+          created_at: string
+          fee_amount: number
+          id: string
+          status: string
+          submission_data: Json
+          updated_at: string
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

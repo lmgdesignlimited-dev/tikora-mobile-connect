@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { SignUpForm } from '@/components/auth/SignUpForm';
-import { TestUserSetup } from '@/components/TestUserSetup';
-import { DebugPanel } from '@/components/DebugPanel';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Auth() {
@@ -47,12 +44,6 @@ export default function Auth() {
         <div className="text-center mt-6 text-sm text-muted-foreground">
           <p>By continuing, you agree to our Terms of Service and Privacy Policy</p>
         </div>
-
-        {/* Test User Setup */}
-        <TestUserSetup />
-
-        {/* Debug Panel */}
-        <DebugPanel />
       </div>
     </div>
   );
