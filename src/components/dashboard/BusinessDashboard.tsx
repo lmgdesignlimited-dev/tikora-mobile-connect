@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Building, 
   TrendingUp, 
@@ -15,10 +16,13 @@ import {
   Truck,
   CheckCircle,
   Clock,
-  BarChart3
+  BarChart3,
+  UserPlus
 } from 'lucide-react';
 import { CreateCampaignModal } from './CreateCampaignModal';
+import { InfluencerSelection } from '@/components/business/InfluencerSelection';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 
 export function BusinessDashboard() {
   const { user } = useAuth();
@@ -183,10 +187,18 @@ export function BusinessDashboard() {
             Launch campaigns and track your marketing performance
           </p>
         </div>
-        <Button onClick={handleCreateCampaign} variant="gradient" className="gap-2">
-          <Plus className="h-4 w-4" />
-          New Campaign
-        </Button>
+        <div className="flex gap-2">
+          <Link to="/admin">
+            <Button variant="outline" className="gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Admin
+            </Button>
+          </Link>
+          <Button onClick={handleCreateCampaign} variant="gradient" className="gap-2">
+            <Plus className="h-4 w-4" />
+            New Campaign
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -244,69 +256,88 @@ export function BusinessDashboard() {
         </Card>
       </div>
 
-      {/* Recent Campaigns */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Campaigns</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {campaigns.length === 0 ? (
-            <div className="text-center py-12">
-              <Building className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="font-medium mb-2">No campaigns yet</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Create your first marketing campaign to reach your target audience
-              </p>
-              <Button onClick={handleCreateCampaign} variant="gradient">
-                Create Campaign
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {campaigns.slice(0, 5).map((campaign: any) => {
-                const deliveryStats = getDeliveryStats(campaign);
-                
-                return (
-                  <div
-                    key={campaign.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                        {getCampaignTypeIcon(campaign.campaign_type)}
-                      </div>
-                      <div>
-                        <h4 className="font-medium">{campaign.title}</h4>
-                        <p className="text-sm text-muted-foreground">{campaign.product_name}</p>
-                        <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Users className="h-3 w-3" />
-                            {campaign.current_applications} applications
-                          </span>
-                          {campaign.requires_product_delivery && (
-                            <span className="flex items-center gap-1">
-                              <Truck className="h-3 w-3" />
-                              {deliveryStats.completed}/{deliveryStats.approved} delivered
-                            </span>
-                          )}
+      {/* Tabs for Campaigns and Influencers */}
+      <Tabs defaultValue="campaigns">
+        <TabsList>
+          <TabsTrigger value="campaigns" className="gap-2">
+            <Package className="h-4 w-4" />
+            Campaigns
+          </TabsTrigger>
+          <TabsTrigger value="influencers" className="gap-2">
+            <UserPlus className="h-4 w-4" />
+            Find Influencers
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="campaigns" className="mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Your Campaigns</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {campaigns.length === 0 ? (
+                <div className="text-center py-12">
+                  <Building className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="font-medium mb-2">No campaigns yet</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Create your first marketing campaign to reach your target audience
+                  </p>
+                  <Button onClick={handleCreateCampaign} variant="gradient">
+                    Create Campaign
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {campaigns.slice(0, 5).map((campaign: any) => {
+                    const deliveryStats = getDeliveryStats(campaign);
+                    
+                    return (
+                      <div
+                        key={campaign.id}
+                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                            {getCampaignTypeIcon(campaign.campaign_type)}
+                          </div>
+                          <div>
+                            <h4 className="font-medium">{campaign.title}</h4>
+                            <p className="text-sm text-muted-foreground">{campaign.product_name}</p>
+                            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Users className="h-3 w-3" />
+                                {campaign.current_applications} applications
+                              </span>
+                              {campaign.requires_product_delivery && (
+                                <span className="flex items-center gap-1">
+                                  <Truck className="h-3 w-3" />
+                                  {deliveryStats.completed}/{deliveryStats.approved} delivered
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <Badge className={getCampaignStatusColor(campaign.status)}>
+                            {campaign.status}
+                          </Badge>
+                          <p className="text-sm font-medium mt-1">
+                            ₦{campaign.total_budget.toLocaleString()}
+                          </p>
                         </div>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <Badge className={getCampaignStatusColor(campaign.status)}>
-                        {campaign.status}
-                      </Badge>
-                      <p className="text-sm font-medium mt-1">
-                        ₦{campaign.total_budget.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="influencers" className="mt-4">
+          <InfluencerSelection />
+        </TabsContent>
+      </Tabs>
 
       <CreateCampaignModal
         open={showCreateModal}

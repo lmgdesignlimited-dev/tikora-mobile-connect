@@ -71,6 +71,72 @@ export type Database = {
         }
         Relationships: []
       }
+      boost_packages: {
+        Row: {
+          boost_multiplier: number
+          boost_type: string
+          coin_cost: number
+          created_at: string
+          description: string | null
+          duration_hours: number
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          boost_multiplier?: number
+          boost_type: string
+          coin_cost: number
+          created_at?: string
+          description?: string | null
+          duration_hours: number
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          boost_multiplier?: number
+          boost_type?: string
+          coin_cost?: number
+          created_at?: string
+          description?: string | null
+          duration_hours?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      boost_settings: {
+        Row: {
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       campaign_applications: {
         Row: {
           campaign_id: string
@@ -220,6 +286,165 @@ export type Database = {
         }
         Relationships: []
       }
+      coin_packages: {
+        Row: {
+          bonus_coins: number | null
+          coin_amount: number
+          created_at: string
+          id: string
+          is_active: boolean | null
+          is_popular: boolean | null
+          name: string
+          price_naira: number
+          updated_at: string
+        }
+        Insert: {
+          bonus_coins?: number | null
+          coin_amount: number
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          is_popular?: boolean | null
+          name: string
+          price_naira: number
+          updated_at?: string
+        }
+        Update: {
+          bonus_coins?: number | null
+          coin_amount?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          is_popular?: boolean | null
+          name?: string
+          price_naira?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      coin_transactions: {
+        Row: {
+          coin_amount: number
+          created_at: string
+          description: string | null
+          id: string
+          naira_amount: number | null
+          payment_status: string | null
+          reference_id: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          coin_amount: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          naira_amount?: number | null
+          payment_status?: string | null
+          reference_id?: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          coin_amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          naira_amount?: number | null
+          payment_status?: string | null
+          reference_id?: string | null
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      coin_wallets: {
+        Row: {
+          coin_balance: number
+          created_at: string
+          id: string
+          total_coins_purchased: number
+          total_coins_spent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          coin_balance?: number
+          created_at?: string
+          id?: string
+          total_coins_purchased?: number
+          total_coins_spent?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          coin_balance?: number
+          created_at?: string
+          id?: string
+          total_coins_purchased?: number
+          total_coins_spent?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      influencer_boosts: {
+        Row: {
+          boost_multiplier: number
+          boost_type: string
+          campaign_id: string | null
+          coins_spent: number
+          created_at: string
+          expires_at: string
+          id: string
+          influencer_id: string
+          is_active: boolean
+          package_id: string | null
+          started_at: string
+        }
+        Insert: {
+          boost_multiplier?: number
+          boost_type: string
+          campaign_id?: string | null
+          coins_spent: number
+          created_at?: string
+          expires_at: string
+          id?: string
+          influencer_id: string
+          is_active?: boolean
+          package_id?: string | null
+          started_at?: string
+        }
+        Update: {
+          boost_multiplier?: number
+          boost_type?: string
+          campaign_id?: string | null
+          coins_spent?: number
+          created_at?: string
+          expires_at?: string
+          id?: string
+          influencer_id?: string
+          is_active?: boolean
+          package_id?: string | null
+          started_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "influencer_boosts_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "influencer_boosts_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "boost_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -296,8 +521,11 @@ export type Database = {
           audiomack_username: string | null
           avatar_url: string | null
           bio: string | null
+          boost_expires_at: string | null
+          boost_score: number | null
           city: string | null
           completed_campaigns: number | null
+          completion_rate: number | null
           country: string | null
           created_at: string
           email: string | null
@@ -306,10 +534,12 @@ export type Database = {
           full_name: string
           id: string
           is_active: boolean | null
+          is_boosted: boolean | null
           location: string | null
           phone: string | null
           rating: number | null
           social_links: Json | null
+          strike_count: number | null
           tiktok_claim_fee: number | null
           tiktok_claim_status: string | null
           total_earnings: number | null
@@ -327,8 +557,11 @@ export type Database = {
           audiomack_username?: string | null
           avatar_url?: string | null
           bio?: string | null
+          boost_expires_at?: string | null
+          boost_score?: number | null
           city?: string | null
           completed_campaigns?: number | null
+          completion_rate?: number | null
           country?: string | null
           created_at?: string
           email?: string | null
@@ -337,10 +570,12 @@ export type Database = {
           full_name: string
           id?: string
           is_active?: boolean | null
+          is_boosted?: boolean | null
           location?: string | null
           phone?: string | null
           rating?: number | null
           social_links?: Json | null
+          strike_count?: number | null
           tiktok_claim_fee?: number | null
           tiktok_claim_status?: string | null
           total_earnings?: number | null
@@ -358,8 +593,11 @@ export type Database = {
           audiomack_username?: string | null
           avatar_url?: string | null
           bio?: string | null
+          boost_expires_at?: string | null
+          boost_score?: number | null
           city?: string | null
           completed_campaigns?: number | null
+          completion_rate?: number | null
           country?: string | null
           created_at?: string
           email?: string | null
@@ -368,10 +606,12 @@ export type Database = {
           full_name?: string
           id?: string
           is_active?: boolean | null
+          is_boosted?: boolean | null
           location?: string | null
           phone?: string | null
           rating?: number | null
           social_links?: Json | null
+          strike_count?: number | null
           tiktok_claim_fee?: number | null
           tiktok_claim_status?: string | null
           total_earnings?: number | null
@@ -533,6 +773,18 @@ export type Database = {
       }
     }
     Functions: {
+      activate_boost: {
+        Args: {
+          p_campaign_id?: string
+          p_influencer_id: string
+          p_package_id: string
+        }
+        Returns: Json
+      }
+      calculate_influencer_score: {
+        Args: { p_influencer_id: string }
+        Returns: number
+      }
       get_public_profile: {
         Args: { profile_user_id: string }
         Returns: {
@@ -558,6 +810,27 @@ export type Database = {
       get_public_profile_data: {
         Args: { profile_row: Database["public"]["Tables"]["profiles"]["Row"] }
         Returns: Json
+      }
+      get_ranked_influencers: {
+        Args: {
+          p_campaign_id?: string
+          p_city?: string
+          p_limit?: number
+          p_tier?: string
+        }
+        Returns: {
+          avatar_url: string
+          boost_expires_at: string
+          boost_type: string
+          completion_rate: number
+          follower_count: number
+          full_name: string
+          is_boosted: boolean
+          ranking_score: number
+          rating: number
+          user_id: string
+          username: string
+        }[]
       }
       get_user_claims: {
         Args: { target_user_id: string }
