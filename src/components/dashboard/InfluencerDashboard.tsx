@@ -16,6 +16,8 @@ import {
   Play
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { CoinWallet } from '@/components/coins/CoinWallet';
+import { BoostStats } from '@/components/coins/BoostStats';
 
 export function InfluencerDashboard() {
   const { user } = useAuth();
@@ -227,6 +229,9 @@ export function InfluencerDashboard() {
         </p>
       </div>
 
+      {/* Coin Wallet Section */}
+      <CoinWallet />
+
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
@@ -367,6 +372,9 @@ export function InfluencerDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Boost Stats Section */}
+      <BoostStats />
     </div>
   );
 }
