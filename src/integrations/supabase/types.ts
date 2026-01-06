@@ -193,96 +193,186 @@ export type Database = {
           },
         ]
       }
+      campaign_pricing: {
+        Row: {
+          base_price: number
+          campaign_type: string
+          content_style: string
+          created_at: string
+          id: string
+          influencer_tier: string
+          is_active: boolean | null
+          region: string | null
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number
+          campaign_type: string
+          content_style: string
+          created_at?: string
+          id?: string
+          influencer_tier: string
+          is_active?: boolean | null
+          region?: string | null
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number
+          campaign_type?: string
+          content_style?: string
+          created_at?: string
+          id?: string
+          influencer_tier?: string
+          is_active?: boolean | null
+          region?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       campaigns: {
         Row: {
+          app_name: string | null
+          app_store_url: string | null
           budget: number
           budget_per_influencer: number | null
+          campaign_category: string | null
           campaign_subtype: string | null
           campaign_type: string
           content_guidelines: string | null
+          content_style: string | null
           cost_per_video: number | null
           created_at: string
           creator_id: string
           current_applicants: number | null
           deadline: string | null
           description: string
+          escrow_amount: number | null
+          escrow_status: string | null
+          event_date: string | null
+          event_location: string | null
           hashtags: string[] | null
           id: string
           influencer_tier: string | null
           max_influencers: number | null
+          movie_title: string | null
+          platform: string | null
           product_details: Json | null
+          production_location: string | null
+          production_package: string | null
           requirements: string | null
+          requires_physical_coverage: boolean | null
+          requires_physical_product: boolean | null
           song_url: string | null
           status: string | null
+          streaming_link: string | null
           target_audience: string | null
           target_cities: string[] | null
           target_demographics: Json | null
           title: string
+          trailer_url: string | null
           updated_at: string
+          video_quality: string | null
           videos_approved: number | null
           videos_requested: number | null
           videos_submitted: number | null
           visibility: string | null
+          website_url: string | null
         }
         Insert: {
+          app_name?: string | null
+          app_store_url?: string | null
           budget: number
           budget_per_influencer?: number | null
+          campaign_category?: string | null
           campaign_subtype?: string | null
           campaign_type: string
           content_guidelines?: string | null
+          content_style?: string | null
           cost_per_video?: number | null
           created_at?: string
           creator_id: string
           current_applicants?: number | null
           deadline?: string | null
           description: string
+          escrow_amount?: number | null
+          escrow_status?: string | null
+          event_date?: string | null
+          event_location?: string | null
           hashtags?: string[] | null
           id?: string
           influencer_tier?: string | null
           max_influencers?: number | null
+          movie_title?: string | null
+          platform?: string | null
           product_details?: Json | null
+          production_location?: string | null
+          production_package?: string | null
           requirements?: string | null
+          requires_physical_coverage?: boolean | null
+          requires_physical_product?: boolean | null
           song_url?: string | null
           status?: string | null
+          streaming_link?: string | null
           target_audience?: string | null
           target_cities?: string[] | null
           target_demographics?: Json | null
           title: string
+          trailer_url?: string | null
           updated_at?: string
+          video_quality?: string | null
           videos_approved?: number | null
           videos_requested?: number | null
           videos_submitted?: number | null
           visibility?: string | null
+          website_url?: string | null
         }
         Update: {
+          app_name?: string | null
+          app_store_url?: string | null
           budget?: number
           budget_per_influencer?: number | null
+          campaign_category?: string | null
           campaign_subtype?: string | null
           campaign_type?: string
           content_guidelines?: string | null
+          content_style?: string | null
           cost_per_video?: number | null
           created_at?: string
           creator_id?: string
           current_applicants?: number | null
           deadline?: string | null
           description?: string
+          escrow_amount?: number | null
+          escrow_status?: string | null
+          event_date?: string | null
+          event_location?: string | null
           hashtags?: string[] | null
           id?: string
           influencer_tier?: string | null
           max_influencers?: number | null
+          movie_title?: string | null
+          platform?: string | null
           product_details?: Json | null
+          production_location?: string | null
+          production_package?: string | null
           requirements?: string | null
+          requires_physical_coverage?: boolean | null
+          requires_physical_product?: boolean | null
           song_url?: string | null
           status?: string | null
+          streaming_link?: string | null
           target_audience?: string | null
           target_cities?: string[] | null
           target_demographics?: Json | null
           title?: string
+          trailer_url?: string | null
           updated_at?: string
+          video_quality?: string | null
           videos_approved?: number | null
           videos_requested?: number | null
           videos_submitted?: number | null
           visibility?: string | null
+          website_url?: string | null
         }
         Relationships: []
       }
@@ -445,6 +535,72 @@ export type Database = {
           },
         ]
       }
+      logistics_tracking: {
+        Row: {
+          application_id: string
+          campaign_id: string
+          carrier: string | null
+          confirmed_at: string | null
+          created_at: string
+          delivered_at: string | null
+          id: string
+          influencer_id: string
+          notes: string | null
+          shipped_at: string | null
+          shipping_address: string | null
+          status: string
+          tracking_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          campaign_id: string
+          carrier?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          influencer_id: string
+          notes?: string | null
+          shipped_at?: string | null
+          shipping_address?: string | null
+          status?: string
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          campaign_id?: string
+          carrier?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          influencer_id?: string
+          notes?: string | null
+          shipped_at?: string | null
+          shipping_address?: string | null
+          status?: string
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "logistics_tracking_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "logistics_tracking_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -475,6 +631,48 @@ export type Database = {
           title?: string
           type?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      production_packages: {
+        Row: {
+          created_at: string
+          crew_size: number | null
+          delivery_days: number | null
+          description: string | null
+          id: string
+          includes: string[] | null
+          is_active: boolean | null
+          name: string
+          price: number
+          updated_at: string
+          video_quality: string | null
+        }
+        Insert: {
+          created_at?: string
+          crew_size?: number | null
+          delivery_days?: number | null
+          description?: string | null
+          id?: string
+          includes?: string[] | null
+          is_active?: boolean | null
+          name: string
+          price: number
+          updated_at?: string
+          video_quality?: string | null
+        }
+        Update: {
+          created_at?: string
+          crew_size?: number | null
+          delivery_days?: number | null
+          description?: string | null
+          id?: string
+          includes?: string[] | null
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          updated_at?: string
+          video_quality?: string | null
         }
         Relationships: []
       }
@@ -783,6 +981,15 @@ export type Database = {
       }
       calculate_influencer_score: {
         Args: { p_influencer_id: string }
+        Returns: number
+      }
+      get_campaign_price: {
+        Args: {
+          p_campaign_type: string
+          p_content_style: string
+          p_influencer_tier: string
+          p_region?: string
+        }
         Returns: number
       }
       get_public_profile: {

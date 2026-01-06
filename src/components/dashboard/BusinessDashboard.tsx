@@ -17,9 +17,15 @@ import {
   CheckCircle,
   Clock,
   BarChart3,
-  UserPlus
+  UserPlus,
+  Music,
+  Film,
+  Calendar,
+  Smartphone,
+  Globe,
+  Camera
 } from 'lucide-react';
-import { CreateCampaignModal } from './CreateCampaignModal';
+import { CampaignWizard } from '@/components/campaigns/CampaignWizard';
 import { InfluencerSelection } from '@/components/business/InfluencerSelection';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
@@ -133,10 +139,20 @@ export function BusinessDashboard() {
 
   const getCampaignTypeIcon = (type: string) => {
     switch (type) {
-      case 'product_promotion':
+      case 'music':
+        return <Music className="h-5 w-5" />;
+      case 'movie':
+        return <Film className="h-5 w-5" />;
+      case 'event':
+        return <Calendar className="h-5 w-5" />;
+      case 'app':
+        return <Smartphone className="h-5 w-5" />;
+      case 'website':
+        return <Globe className="h-5 w-5" />;
+      case 'product':
         return <Package className="h-5 w-5" />;
-      case 'video_only':
-        return <Target className="h-5 w-5" />;
+      case 'production':
+        return <Camera className="h-5 w-5" />;
       default:
         return <TrendingUp className="h-5 w-5" />;
     }
@@ -339,13 +355,12 @@ export function BusinessDashboard() {
         </TabsContent>
       </Tabs>
 
-      <CreateCampaignModal
+      <CampaignWizard
         open={showCreateModal}
         onOpenChange={setShowCreateModal}
         userType="business"
         onSuccess={() => {
           fetchCampaigns();
-          toast.success('Campaign created successfully!');
         }}
       />
     </div>
