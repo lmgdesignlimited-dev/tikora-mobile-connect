@@ -24,7 +24,7 @@ import {
   Clock,
   XCircle
 } from 'lucide-react';
-import { CreateCampaignModal } from './CreateCampaignModal';
+import { CampaignWizard } from '@/components/campaigns/CampaignWizard';
 import { toast } from 'sonner';
 
 export function ArtistDashboard() {
@@ -580,13 +580,12 @@ export function ArtistDashboard() {
         </Card>
       </div>
 
-      <CreateCampaignModal
+      <CampaignWizard
         open={showCreateModal}
         onOpenChange={setShowCreateModal}
         userType="artist"
         onSuccess={() => {
           fetchCampaigns();
-          toast.success('Campaign created successfully!');
         }}
       />
     </div>
