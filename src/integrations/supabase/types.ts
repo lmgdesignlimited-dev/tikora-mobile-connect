@@ -478,6 +478,54 @@ export type Database = {
         }
         Relationships: []
       }
+      content_reviews: {
+        Row: {
+          action: string
+          created_at: string | null
+          custom_feedback: string | null
+          id: string
+          rejection_reason_id: string | null
+          reviewer_id: string
+          reviewer_type: string
+          submission_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          custom_feedback?: string | null
+          id?: string
+          rejection_reason_id?: string | null
+          reviewer_id: string
+          reviewer_type?: string
+          submission_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          custom_feedback?: string | null
+          id?: string
+          rejection_reason_id?: string | null
+          reviewer_id?: string
+          reviewer_type?: string
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_reviews_rejection_reason_id_fkey"
+            columns: ["rejection_reason_id"]
+            isOneToOne: false
+            referencedRelation: "rejection_reasons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reviews_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "video_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       influencer_boosts: {
         Row: {
           boost_multiplier: number
@@ -823,6 +871,36 @@ export type Database = {
         }
         Relationships: []
       }
+      rejection_reasons: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          reason: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          reason: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          reason?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       video_submissions: {
         Row: {
           admin_feedback: string | null
@@ -832,7 +910,15 @@ export type Database = {
           earnings: number | null
           id: string
           influencer_id: string
+          is_admin_override: boolean | null
+          max_resubmissions: number | null
+          original_submission_id: string | null
           platform: string
+          rejection_category: string | null
+          rejection_reason: string | null
+          resubmission_count: number | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           status: string | null
           submission_date: string | null
           updated_at: string
@@ -846,7 +932,15 @@ export type Database = {
           earnings?: number | null
           id?: string
           influencer_id: string
+          is_admin_override?: boolean | null
+          max_resubmissions?: number | null
+          original_submission_id?: string | null
           platform: string
+          rejection_category?: string | null
+          rejection_reason?: string | null
+          resubmission_count?: number | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           status?: string | null
           submission_date?: string | null
           updated_at?: string
@@ -860,13 +954,29 @@ export type Database = {
           earnings?: number | null
           id?: string
           influencer_id?: string
+          is_admin_override?: boolean | null
+          max_resubmissions?: number | null
+          original_submission_id?: string | null
           platform?: string
+          rejection_category?: string | null
+          rejection_reason?: string | null
+          resubmission_count?: number | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           status?: string | null
           submission_date?: string | null
           updated_at?: string
           video_url?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "video_submissions_original_submission_id_fkey"
+            columns: ["original_submission_id"]
+            isOneToOne: false
+            referencedRelation: "video_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       wallet_transactions: {
         Row: {
@@ -1051,6 +1161,20 @@ export type Database = {
           updated_at: string
           user_id: string
         }[]
+      }
+      resubmit_content: {
+        Args: { p_new_video_url: string; p_original_submission_id: string }
+        Returns: Json
+      }
+      review_content: {
+        Args: {
+          p_action: string
+          p_custom_feedback?: string
+          p_is_admin?: boolean
+          p_rejection_reason_id?: string
+          p_submission_id: string
+        }
+        Returns: Json
       }
     }
     Enums: {
