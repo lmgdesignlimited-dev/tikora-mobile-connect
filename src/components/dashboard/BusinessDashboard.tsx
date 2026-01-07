@@ -5,6 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { 
   Building, 
   TrendingUp, 
@@ -23,10 +29,12 @@ import {
   Calendar,
   Smartphone,
   Globe,
-  Camera
+  Camera,
+  Video
 } from 'lucide-react';
 import { CampaignWizard } from '@/components/campaigns/CampaignWizard';
 import { InfluencerSelection } from '@/components/business/InfluencerSelection';
+import { ContentReviewPanel } from '@/components/content/ContentReviewPanel';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 
@@ -42,7 +50,7 @@ export function BusinessDashboard() {
     completedCampaigns: 0
   });
   const [showCreateModal, setShowCreateModal] = useState(false);
-
+  const [reviewingCampaign, setReviewingCampaign] = useState<any>(null);
   useEffect(() => {
     if (user) {
       loadDashboardData();
@@ -306,6 +314,7 @@ export function BusinessDashboard() {
                 <div className="space-y-4">
                   {campaigns.slice(0, 5).map((campaign: any) => {
                     const deliveryStats = getDeliveryStats(campaign);
+                    const pendingSubmissions = campaign.videos_submitted - campaign.videos_approved;
                     
                     return (
                       <div
@@ -322,9 +331,13 @@ export function BusinessDashboard() {
                             <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1">
                                 <Users className="h-3 w-3" />
-                                {campaign.current_applications} applications
+                                {campaign.current_applicants || 0} applications
                               </span>
-                              {campaign.requires_product_delivery && (
+                              <span className="flex items-center gap-1">
+                                <Video className="h-3 w-3" />
+                                {campaign.videos_approved || 0}/{campaign.videos_requested || 0} approved
+                              </span>
+                              {campaign.requires_physical_product && (
                                 <span className="flex items-center gap-1">
                                   <Truck className="h-3 w-3" />
                                   {deliveryStats.completed}/{deliveryStats.approved} delivered
@@ -333,13 +346,26 @@ export function BusinessDashboard() {
                             </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <Badge className={getCampaignStatusColor(campaign.status)}>
-                            {campaign.status}
-                          </Badge>
-                          <p className="text-sm font-medium mt-1">
-                            ₦{campaign.total_budget.toLocaleString()}
-                          </p>
+                        <div className="flex items-center gap-3">
+                          {pendingSubmissions > 0 && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setReviewingCampaign(campaign)}
+                              className="gap-1"
+                            >
+                              <Clock className="h-3 w-3 text-warning" />
+                              {pendingSubmissions} to review
+                            </Button>
+                          )}
+                          <div className="text-right">
+                            <Badge className={getCampaignStatusColor(campaign.status)}>
+                              {campaign.status}
+                            </Badge>
+                            <p className="text-sm font-medium mt-1">
+                              ₦{campaign.budget?.toLocaleString()}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     );
@@ -363,6 +389,27 @@ export function BusinessDashboard() {
           fetchCampaigns();
         }}
       />
+
+      {/* Content Review Dialog */}
+      <Dialog open={!!reviewingCampaign} onOpenChange={() => setReviewingCampaign(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Video className="h-5 w-5 text-primary" />
+              Review Submissions: {reviewingCampaign?.title}
+            </DialogTitle>
+          </DialogHeader>
+          {reviewingCampaign && (
+            <ContentReviewPanel
+              campaignId={reviewingCampaign.id}
+              campaignTitle={reviewingCampaign.title}
+              onReviewComplete={() => {
+                fetchCampaigns();
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
