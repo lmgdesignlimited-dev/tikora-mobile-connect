@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_logs: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          ip_address: string | null
+          target_id: string | null
+          target_type: string
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          target_id?: string | null
+          target_type: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          target_id?: string | null
+          target_type?: string
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           author_id: string
@@ -901,6 +934,54 @@ export type Database = {
         }
         Relationships: []
       }
+      system_metrics: {
+        Row: {
+          id: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number
+          recorded_at: string | null
+        }
+        Insert: {
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value: number
+          recorded_at?: string | null
+        }
+        Update: {
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number
+          recorded_at?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          granted_at: string | null
+          granted_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       video_submissions: {
         Row: {
           admin_feedback: string | null
@@ -1093,6 +1174,7 @@ export type Database = {
         Args: { p_influencer_id: string }
         Returns: number
       }
+      get_admin_dashboard_stats: { Args: never; Returns: Json }
       get_campaign_price: {
         Args: {
           p_campaign_type: string
@@ -1101,6 +1183,23 @@ export type Database = {
           p_region?: string
         }
         Returns: number
+      }
+      get_moderation_queue: {
+        Args: { p_limit?: number; p_status?: string }
+        Returns: {
+          campaign_id: string
+          campaign_title: string
+          campaign_type: string
+          influencer_id: string
+          influencer_name: string
+          influencer_username: string
+          platform: string
+          resubmission_count: number
+          status: string
+          submission_date: string
+          submission_id: string
+          video_url: string
+        }[]
       }
       get_public_profile: {
         Args: { profile_user_id: string }
@@ -1162,6 +1261,17 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_user_roles: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"][]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       resubmit_content: {
         Args: { p_new_video_url: string; p_original_submission_id: string }
         Returns: Json
@@ -1178,7 +1288,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "analyst" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1305,6 +1415,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "analyst", "user"],
+    },
   },
 } as const
