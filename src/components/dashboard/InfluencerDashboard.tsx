@@ -16,13 +16,15 @@ import {
   Package,
   Play,
   Video,
-  Upload
+  Upload,
+  Briefcase
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { CoinWallet } from '@/components/coins/CoinWallet';
 import { BoostStats } from '@/components/coins/BoostStats';
 import { VideoSubmissionCard } from '@/components/content/VideoSubmissionCard';
 import { SubmitContentModal } from '@/components/content/SubmitContentModal';
+import { GigDiscoveryFeed } from '@/components/gigs/GigDiscoveryFeed';
 
 export function InfluencerDashboard() {
   const { user } = useAuth();
@@ -324,12 +326,12 @@ export function InfluencerDashboard() {
         </Card>
       </div>
 
-      {/* Tabs for Campaigns, Applications, and Submissions */}
-      <Tabs defaultValue="available">
+      {/* Tabs for Gigs, Applications, and Submissions */}
+      <Tabs defaultValue="gigs">
         <TabsList>
-          <TabsTrigger value="available" className="gap-2">
-            <TrendingUp className="h-4 w-4" />
-            Available
+          <TabsTrigger value="gigs" className="gap-2">
+            <Briefcase className="h-4 w-4" />
+            Find Gigs
           </TabsTrigger>
           <TabsTrigger value="applications" className="gap-2">
             <Clock className="h-4 w-4" />
@@ -341,54 +343,8 @@ export function InfluencerDashboard() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="available" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Available Campaigns</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {availableCampaigns.length === 0 ? (
-                <div className="text-center py-8">
-                  <TrendingUp className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">No campaigns available</p>
-                </div>
-              ) : (
-                <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {availableCampaigns.map((campaign: any) => (
-                    <div
-                      key={campaign.id}
-                      className="p-3 border rounded-lg hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          {getCampaignIcon(campaign.campaign_type)}
-                          <h4 className="font-medium text-sm">{campaign.title}</h4>
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {campaign.campaign_type.replace('_', ' ')}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
-                        {campaign.description}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">
-                          ₦{campaign.budget_per_influencer?.toLocaleString() || 'Negotiable'}
-                        </span>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleApplyToCampaign(campaign.id, campaign.budget_per_influencer || 5000)}
-                        >
-                          Apply
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        <TabsContent value="gigs" className="mt-4">
+          <GigDiscoveryFeed />
         </TabsContent>
 
         <TabsContent value="applications" className="mt-4">
