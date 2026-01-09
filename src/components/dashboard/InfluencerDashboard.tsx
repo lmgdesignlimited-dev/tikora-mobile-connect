@@ -128,15 +128,9 @@ export function InfluencerDashboard() {
     try {
       const { data, error } = await supabase
         .from('campaigns')
-        .select(`
-          *,
-          profiles!campaigns_creator_id_fkey (
-            full_name,
-            user_type
-          )
-        `)
+        .select('*')
         .eq('status', 'active')
-        .not('creator_id', 'eq', user?.id)
+        .neq('creator_id', user?.id)
         .order('created_at', { ascending: false })
         .limit(10);
 
