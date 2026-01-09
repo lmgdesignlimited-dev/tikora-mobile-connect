@@ -93,10 +93,8 @@ export function InfluencerDashboard() {
             id,
             title,
             campaign_type,
-            song_title,
-            product_name,
-            total_budget,
-            videos_per_influencer
+            budget,
+            platform
           )
         `)
         .eq('influencer_id', user?.id)
@@ -153,22 +151,35 @@ export function InfluencerDashboard() {
 
   const fetchSubmissions = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch submissions without nested campaign join (no FK relationship)
+      const { data: submissionsData, error } = await supabase
         .from('video_submissions')
-        .select(`
-          *,
-          campaigns (
-            id,
-            title,
-            campaign_type
-          )
-        `)
+        .select('*')
         .eq('influencer_id', user?.id)
         .order('created_at', { ascending: false })
         .limit(10);
 
       if (error) throw error;
-      setSubmissions(data || []);
+      
+      // If we have submissions, fetch their campaign details separately
+      if (submissionsData && submissionsData.length > 0) {
+        const campaignIds = [...new Set(submissionsData.map(s => s.campaign_id))];
+        const { data: campaignsData } = await supabase
+          .from('campaigns')
+          .select('id, title, campaign_type')
+          .in('id', campaignIds);
+        
+        // Map campaigns to submissions
+        const campaignMap = new Map(campaignsData?.map(c => [c.id, c]) || []);
+        const enrichedSubmissions = submissionsData.map(s => ({
+          ...s,
+          campaigns: campaignMap.get(s.campaign_id) || null
+        }));
+        
+        setSubmissions(enrichedSubmissions);
+      } else {
+        setSubmissions([]);
+      }
     } catch (error) {
       console.error('Error fetching submissions:', error);
     }
