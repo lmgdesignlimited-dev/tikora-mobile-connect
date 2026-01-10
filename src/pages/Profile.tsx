@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { WalletDashboard } from '@/components/wallet/WalletDashboard';
+import { EditProfileModal } from '@/components/profile/EditProfileModal';
 import { 
   User, 
   Settings, 
@@ -21,7 +22,8 @@ import {
   MapPin,
   CheckCircle,
   Edit,
-  Wallet
+  Wallet,
+  ExternalLink
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -30,6 +32,7 @@ export default function Profile() {
   const [profile, setProfile] = useState<any>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [showWallet, setShowWallet] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -158,6 +161,24 @@ export default function Profile() {
                     {profile.bio}
                   </p>
                 )}
+
+                {/* Social Links */}
+                {profile?.social_links && Object.keys(profile.social_links).length > 0 && (
+                  <div className="flex flex-wrap justify-center gap-2 mt-4">
+                    {Object.entries(profile.social_links as Record<string, string>).map(([platform, url]) => (
+                      <a
+                        key={platform}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-muted rounded-full text-xs hover:bg-primary/10 transition-colors"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        <span className="capitalize">{platform}</span>
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -203,7 +224,11 @@ export default function Profile() {
                 <Wallet className="h-4 w-4" />
                 Wallet & Earnings
               </Button>
-              <Button variant="outline" className="w-full justify-start gap-2">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start gap-2"
+                onClick={() => setShowEditProfile(true)}
+              >
                 <Edit className="h-4 w-4" />
                 Edit Profile
               </Button>
@@ -252,6 +277,14 @@ export default function Profile() {
       </main>
 
       <MobileNavigation />
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        open={showEditProfile}
+        onOpenChange={setShowEditProfile}
+        profile={profile}
+        onProfileUpdated={fetchProfile}
+      />
     </div>
   );
 }
