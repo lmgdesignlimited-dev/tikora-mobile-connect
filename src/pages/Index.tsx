@@ -22,8 +22,17 @@ import heroImage from '@/assets/tikora-hero-image.jpg';
 const Index = () => {
   const { user, loading } = useAuth();
 
-  // Redirect authenticated users to dashboard
-  if (!loading && user) {
+  // Show loading while checking auth state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Only redirect after loading is complete AND user exists
+  if (user) {
     return <Navigate to="/dashboard" replace />;
   }
 

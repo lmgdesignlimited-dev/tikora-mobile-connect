@@ -1170,6 +1170,7 @@ export type Database = {
         }
         Returns: Json
       }
+      bootstrap_first_admin: { Args: never; Returns: boolean }
       calculate_influencer_score: {
         Args: { p_influencer_id: string }
         Returns: number
