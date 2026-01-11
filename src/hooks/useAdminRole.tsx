@@ -13,6 +13,7 @@ interface UseAdminRoleReturn {
   loading: boolean;
   checkRole: (role: AppRole) => boolean;
   refetch: () => Promise<void>;
+  bootstrapAdmin: () => Promise<boolean>;
 }
 
 export function useAdminRole(): UseAdminRoleReturn {
@@ -45,6 +46,25 @@ export function useAdminRole(): UseAdminRoleReturn {
     }
   }, [user]);
 
+  const bootstrapAdmin = useCallback(async (): Promise<boolean> => {
+    if (!user) return false;
+    
+    try {
+      const { data, error } = await supabase.rpc('bootstrap_first_admin');
+      if (error) {
+        console.error('Bootstrap admin error:', error);
+        return false;
+      }
+      if (data) {
+        await fetchRoles();
+      }
+      return data || false;
+    } catch (error) {
+      console.error('Bootstrap admin error:', error);
+      return false;
+    }
+  }, [user, fetchRoles]);
+
   useEffect(() => {
     fetchRoles();
   }, [fetchRoles]);
@@ -67,5 +87,6 @@ export function useAdminRole(): UseAdminRoleReturn {
     loading,
     checkRole,
     refetch: fetchRoles,
+    bootstrapAdmin,
   };
 }
