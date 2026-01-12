@@ -559,6 +559,54 @@ export type Database = {
           },
         ]
       }
+      crypto_payment_requests: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          created_at: string
+          crypto_type: string
+          id: string
+          payment_proof_url: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          tx_hash: string | null
+          updated_at: string
+          user_id: string
+          wallet_address: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount: number
+          created_at?: string
+          crypto_type?: string
+          id?: string
+          payment_proof_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          tx_hash?: string | null
+          updated_at?: string
+          user_id: string
+          wallet_address: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          created_at?: string
+          crypto_type?: string
+          id?: string
+          payment_proof_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          tx_hash?: string | null
+          updated_at?: string
+          user_id?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
       influencer_boosts: {
         Row: {
           boost_multiplier: number
@@ -684,34 +732,88 @@ export type Database = {
       }
       notifications: {
         Row: {
+          action_url: string | null
           created_at: string
           data: Json | null
+          icon: string | null
           id: string
           is_read: boolean | null
           message: string
+          priority: string | null
           title: string
           type: string
           user_id: string
         }
         Insert: {
+          action_url?: string | null
           created_at?: string
           data?: Json | null
+          icon?: string | null
           id?: string
           is_read?: boolean | null
           message: string
+          priority?: string | null
           title: string
           type: string
           user_id: string
         }
         Update: {
+          action_url?: string | null
           created_at?: string
           data?: Json | null
+          icon?: string | null
           id?: string
           is_read?: boolean | null
           message?: string
+          priority?: string | null
           title?: string
           type?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      onboarding_progress: {
+        Row: {
+          created_at: string
+          current_step: number
+          id: string
+          is_completed: boolean | null
+          profile_completed: boolean | null
+          spotify_verified: boolean | null
+          steps_completed: Json | null
+          tiktok_verified: boolean | null
+          total_steps: number
+          updated_at: string
+          user_id: string
+          user_type: string
+        }
+        Insert: {
+          created_at?: string
+          current_step?: number
+          id?: string
+          is_completed?: boolean | null
+          profile_completed?: boolean | null
+          spotify_verified?: boolean | null
+          steps_completed?: Json | null
+          tiktok_verified?: boolean | null
+          total_steps?: number
+          updated_at?: string
+          user_id: string
+          user_type: string
+        }
+        Update: {
+          created_at?: string
+          current_step?: number
+          id?: string
+          is_completed?: boolean | null
+          profile_completed?: boolean | null
+          spotify_verified?: boolean | null
+          steps_completed?: Json | null
+          tiktok_verified?: boolean | null
+          total_steps?: number
+          updated_at?: string
+          user_id?: string
+          user_type?: string
         }
         Relationships: []
       }
@@ -799,6 +901,9 @@ export type Database = {
           audiomack_status: string | null
           audiomack_username: string | null
           avatar_url: string | null
+          bank_account_name: string | null
+          bank_account_number: string | null
+          bank_name: string | null
           bio: string | null
           boost_expires_at: string | null
           boost_score: number | null
@@ -807,6 +912,7 @@ export type Database = {
           completion_rate: number | null
           country: string | null
           created_at: string
+          crypto_wallet_address: string | null
           email: string | null
           follower_count: number | null
           following_count: number | null
@@ -816,6 +922,7 @@ export type Database = {
           is_boosted: boolean | null
           location: string | null
           phone: string | null
+          preferred_currency: string | null
           rating: number | null
           social_links: Json | null
           strike_count: number | null
@@ -835,6 +942,9 @@ export type Database = {
           audiomack_status?: string | null
           audiomack_username?: string | null
           avatar_url?: string | null
+          bank_account_name?: string | null
+          bank_account_number?: string | null
+          bank_name?: string | null
           bio?: string | null
           boost_expires_at?: string | null
           boost_score?: number | null
@@ -843,6 +953,7 @@ export type Database = {
           completion_rate?: number | null
           country?: string | null
           created_at?: string
+          crypto_wallet_address?: string | null
           email?: string | null
           follower_count?: number | null
           following_count?: number | null
@@ -852,6 +963,7 @@ export type Database = {
           is_boosted?: boolean | null
           location?: string | null
           phone?: string | null
+          preferred_currency?: string | null
           rating?: number | null
           social_links?: Json | null
           strike_count?: number | null
@@ -871,6 +983,9 @@ export type Database = {
           audiomack_status?: string | null
           audiomack_username?: string | null
           avatar_url?: string | null
+          bank_account_name?: string | null
+          bank_account_number?: string | null
+          bank_name?: string | null
           bio?: string | null
           boost_expires_at?: string | null
           boost_score?: number | null
@@ -879,6 +994,7 @@ export type Database = {
           completion_rate?: number | null
           country?: string | null
           created_at?: string
+          crypto_wallet_address?: string | null
           email?: string | null
           follower_count?: number | null
           following_count?: number | null
@@ -888,6 +1004,7 @@ export type Database = {
           is_boosted?: boolean | null
           location?: string | null
           phone?: string | null
+          preferred_currency?: string | null
           rating?: number | null
           social_links?: Json | null
           strike_count?: number | null
