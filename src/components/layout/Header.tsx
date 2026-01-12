@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Bell, Menu, Search, Wallet } from 'lucide-react';
+import { Menu, Search, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
+import { NotificationDropdown } from '@/components/notifications';
 
 interface HeaderProps {
   onMenuToggle?: () => void;
@@ -65,14 +65,7 @@ export function Header({ onMenuToggle, showSearch = true }: HeaderProps) {
           </Button>
 
           {/* Notifications */}
-          <div className="relative">
-            <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
-            </Button>
-            <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary">
-              3
-            </Badge>
-          </div>
+          <NotificationDropdown />
 
           {/* Profile Avatar */}
           <Avatar className="h-8 w-8">
