@@ -21,7 +21,9 @@ import {
   Clock,
   User,
   Video,
-  AlertTriangle
+  AlertTriangle,
+  Shield,
+  RotateCcw
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
@@ -39,6 +41,9 @@ interface QueueItem {
   influencer_name: string;
   influencer_username: string;
   resubmission_count: number;
+  rejection_reason?: string;
+  admin_feedback?: string;
+  is_admin_override?: boolean;
 }
 
 interface RejectionReason {
@@ -65,13 +70,58 @@ export function ModerationQueue() {
   const fetchQueue = async (status: string) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.rpc('get_moderation_queue', {
-        p_status: status,
-        p_limit: 50
-      });
+      // For overrides tab, fetch approved submissions that were admin overridden
+      if (status === 'overrides') {
+        const { data, error } = await supabase
+          .from('video_submissions')
+          .select(`
+            id,
+            video_url,
+            platform,
+            status,
+            submission_date,
+            rejection_reason,
+            admin_feedback,
+            is_admin_override,
+            campaign_id,
+            influencer_id,
+            campaigns!inner(title, campaign_type),
+            profiles:public_profiles!video_submissions_influencer_id_fkey(full_name, username)
+          `)
+          .eq('is_admin_override', true)
+          .order('submission_date', { ascending: false })
+          .limit(50);
 
-      if (error) throw error;
-      setQueue(data || []);
+        if (error) throw error;
+
+        const mappedData = (data || []).map((item: any) => ({
+          submission_id: item.id,
+          video_url: item.video_url,
+          platform: item.platform,
+          status: item.status,
+          submission_date: item.submission_date,
+          campaign_id: item.campaign_id,
+          campaign_title: item.campaigns?.title || 'Unknown',
+          campaign_type: item.campaigns?.campaign_type || 'general',
+          influencer_id: item.influencer_id,
+          influencer_name: item.profiles?.full_name || 'Unknown',
+          influencer_username: item.profiles?.username || '',
+          resubmission_count: 0,
+          rejection_reason: item.rejection_reason,
+          admin_feedback: item.admin_feedback,
+          is_admin_override: item.is_admin_override
+        }));
+
+        setQueue(mappedData);
+      } else {
+        const { data, error } = await supabase.rpc('get_moderation_queue', {
+          p_status: status,
+          p_limit: 50
+        });
+
+        if (error) throw error;
+        setQueue(data || []);
+      }
     } catch (error) {
       console.error('Error fetching queue:', error);
       toast.error('Failed to load moderation queue');
@@ -168,6 +218,10 @@ export function ModerationQueue() {
             <XCircle className="h-4 w-4" />
             Rejected
           </TabsTrigger>
+          <TabsTrigger value="overrides" className="gap-2">
+            <Shield className="h-4 w-4" />
+            Admin Overrides
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-4">
@@ -256,7 +310,7 @@ export function ModerationQueue() {
                         </Button>
                       </div>
 
-                      {/* Actions (only for pending) */}
+                      {/* Actions for pending */}
                       {activeTab === 'pending' && (
                         <div className="lg:w-80 space-y-3 border-t lg:border-t-0 lg:border-l pt-4 lg:pt-0 lg:pl-4">
                           <div className="flex gap-2">
@@ -301,6 +355,28 @@ export function ModerationQueue() {
                           </Button>
                         </div>
                       )}
+
+                      {/* Admin Override for rejected submissions */}
+                      {activeTab === 'rejected' && (
+                        <div className="lg:w-64 space-y-3 border-t lg:border-t-0 lg:border-l pt-4 lg:pt-0 lg:pl-4">
+                          <div className="text-sm text-muted-foreground mb-2">
+                            <p className="font-medium text-foreground">Rejection Reason:</p>
+                            <p>{item.rejection_reason || 'No reason provided'}</p>
+                          </div>
+                          <Button
+                            variant="outline"
+                            className="w-full gap-2 border-primary text-primary hover:bg-primary/10"
+                            onClick={() => handleReview(item.submission_id, 'approve')}
+                            disabled={processing === item.submission_id}
+                          >
+                            <RotateCcw className="h-4 w-4" />
+                            Override & Approve
+                          </Button>
+                          <p className="text-xs text-muted-foreground text-center">
+                            This will mark as admin override
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -309,6 +385,46 @@ export function ModerationQueue() {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Admin Override History */}
+      {activeTab === 'overrides' && (
+        <Card className="mt-4">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary" />
+              Admin Override History
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <Skeleton className="h-20 w-full" />
+            ) : queue.filter(q => q.is_admin_override).length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">
+                No admin overrides recorded yet
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {queue.filter(q => q.is_admin_override).map((item) => (
+                  <div key={item.submission_id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Shield className="h-5 w-5 text-primary" />
+                      <div>
+                        <p className="font-medium">{item.campaign_title}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {item.influencer_name} • Overridden {formatDistanceToNow(new Date(item.submission_date), { addSuffix: true })}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge className="bg-primary/10 text-primary border-primary/20">
+                      Admin Override
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
