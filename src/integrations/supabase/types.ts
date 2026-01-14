@@ -607,6 +607,45 @@ export type Database = {
         }
         Relationships: []
       }
+      email_notifications: {
+        Row: {
+          created_at: string | null
+          email_type: string
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          recipient_email: string
+          sent_at: string | null
+          status: string | null
+          subject: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email_type: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          recipient_email: string
+          sent_at?: string | null
+          status?: string | null
+          subject: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email_type?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          recipient_email?: string
+          sent_at?: string | null
+          status?: string | null
+          subject?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       influencer_boosts: {
         Row: {
           boost_multiplier: number
@@ -814,6 +853,87 @@ export type Database = {
           updated_at?: string
           user_id?: string
           user_type?: string
+        }
+        Relationships: []
+      }
+      payment_gateway_config: {
+        Row: {
+          created_at: string | null
+          gateway_name: string
+          id: string
+          is_active: boolean | null
+          is_configured: boolean | null
+          last_verified_at: string | null
+          settings: Json | null
+          test_mode: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          gateway_name: string
+          id?: string
+          is_active?: boolean | null
+          is_configured?: boolean | null
+          last_verified_at?: string | null
+          settings?: Json | null
+          test_mode?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          gateway_name?: string
+          id?: string
+          is_active?: boolean | null
+          is_configured?: boolean | null
+          last_verified_at?: string | null
+          settings?: Json | null
+          test_mode?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      payment_gateway_logs: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          currency: string | null
+          error_message: string | null
+          event_type: string
+          gateway_name: string
+          id: string
+          reference_id: string | null
+          request_payload: Json | null
+          response_payload: Json | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          currency?: string | null
+          error_message?: string | null
+          event_type: string
+          gateway_name: string
+          id?: string
+          reference_id?: string | null
+          request_payload?: Json | null
+          response_payload?: Json | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          currency?: string | null
+          error_message?: string | null
+          event_type?: string
+          gateway_name?: string
+          id?: string
+          reference_id?: string | null
+          request_payload?: Json | null
+          response_payload?: Json | null
+          status?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1293,6 +1413,7 @@ export type Database = {
         Returns: number
       }
       get_admin_dashboard_stats: { Args: never; Returns: Json }
+      get_all_roles: { Args: never; Returns: string[] }
       get_campaign_price: {
         Args: {
           p_campaign_type: string
@@ -1301,6 +1422,24 @@ export type Database = {
           p_region?: string
         }
         Returns: number
+      }
+      get_crypto_payment_requests: {
+        Args: { p_limit?: number; p_status?: string }
+        Returns: {
+          admin_notes: string
+          amount: number
+          created_at: string
+          crypto_type: string
+          id: string
+          payment_proof_url: string
+          reviewed_at: string
+          status: string
+          tx_hash: string
+          user_email: string
+          user_id: string
+          user_name: string
+          wallet_address: string
+        }[]
       }
       get_moderation_queue: {
         Args: { p_limit?: number; p_status?: string }
@@ -1383,6 +1522,13 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]
       }
+      has_any_role: {
+        Args: {
+          _roles: Database["public"]["Enums"]["app_role"][]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1401,6 +1547,15 @@ export type Database = {
           p_is_admin?: boolean
           p_rejection_reason_id?: string
           p_submission_id: string
+        }
+        Returns: Json
+      }
+      review_crypto_payment: {
+        Args: {
+          p_action: string
+          p_admin_notes?: string
+          p_request_id: string
+          p_tx_hash?: string
         }
         Returns: Json
       }

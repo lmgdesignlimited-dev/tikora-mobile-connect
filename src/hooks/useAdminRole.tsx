@@ -2,13 +2,17 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
-type AppRole = 'admin' | 'moderator' | 'analyst' | 'user';
+export type AppRole = 'admin' | 'moderator' | 'analyst' | 'user' | 'super_admin' | 'finance' | 'operations' | 'support';
 
 interface UseAdminRoleReturn {
   roles: AppRole[];
   isAdmin: boolean;
+  isSuperAdmin: boolean;
   isModerator: boolean;
   isAnalyst: boolean;
+  isFinance: boolean;
+  isOperations: boolean;
+  isSupport: boolean;
   hasAnyAdminRole: boolean;
   loading: boolean;
   checkRole: (role: AppRole) => boolean;
@@ -74,15 +78,23 @@ export function useAdminRole(): UseAdminRoleReturn {
   }, [roles]);
 
   const isAdmin = roles.includes('admin');
+  const isSuperAdmin = roles.includes('super_admin');
   const isModerator = roles.includes('moderator');
   const isAnalyst = roles.includes('analyst');
-  const hasAnyAdminRole = isAdmin || isModerator || isAnalyst;
+  const isFinance = roles.includes('finance');
+  const isOperations = roles.includes('operations');
+  const isSupport = roles.includes('support');
+  const hasAnyAdminRole = isAdmin || isSuperAdmin || isModerator || isAnalyst || isFinance || isOperations || isSupport;
 
   return {
     roles,
     isAdmin,
+    isSuperAdmin,
     isModerator,
     isAnalyst,
+    isFinance,
+    isOperations,
+    isSupport,
     hasAnyAdminRole,
     loading,
     checkRole,
