@@ -22,6 +22,8 @@ export type Database = {
           details: Json | null
           id: string
           ip_address: string | null
+          module: string | null
+          severity: string | null
           target_id: string | null
           target_type: string
         }
@@ -32,6 +34,8 @@ export type Database = {
           details?: Json | null
           id?: string
           ip_address?: string | null
+          module?: string | null
+          severity?: string | null
           target_id?: string | null
           target_type: string
         }
@@ -42,6 +46,8 @@ export type Database = {
           details?: Json | null
           id?: string
           ip_address?: string | null
+          module?: string | null
+          severity?: string | null
           target_id?: string | null
           target_type?: string
         }
@@ -937,6 +943,39 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_settings: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value?: Json
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       production_packages: {
         Row: {
           created_at: string
@@ -1171,6 +1210,122 @@ export type Database = {
         }
         Relationships: []
       }
+      service_orders: {
+        Row: {
+          admin_notes: string | null
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string | null
+          currency: string | null
+          id: string
+          package_id: string | null
+          price_paid: number
+          proof_documents: string[] | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          service_type: Database["public"]["Enums"]["service_type"]
+          started_at: string | null
+          status: Database["public"]["Enums"]["service_order_status"] | null
+          submission_data: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          package_id?: string | null
+          price_paid: number
+          proof_documents?: string[] | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          service_type: Database["public"]["Enums"]["service_type"]
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["service_order_status"] | null
+          submission_data?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          package_id?: string | null
+          price_paid?: number
+          proof_documents?: string[] | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          service_type?: Database["public"]["Enums"]["service_type"]
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["service_order_status"] | null
+          submission_data?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_orders_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "service_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_packages: {
+        Row: {
+          category: string
+          created_at: string | null
+          currency: string | null
+          delivery_days: number | null
+          description: string | null
+          features: string[] | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+          service_type: Database["public"]["Enums"]["service_type"]
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          currency?: string | null
+          delivery_days?: number | null
+          description?: string | null
+          features?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price: number
+          service_type: Database["public"]["Enums"]["service_type"]
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          currency?: string | null
+          delivery_days?: number | null
+          description?: string | null
+          features?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          service_type?: Database["public"]["Enums"]["service_type"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       system_metrics: {
         Row: {
           id: string
@@ -1216,6 +1371,90 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      video_promotions: {
+        Row: {
+          achieved_clicks: number | null
+          achieved_engagement: number | null
+          achieved_views: number | null
+          admin_notes: string | null
+          budget: number
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          goal: Database["public"]["Enums"]["promotion_goal"]
+          id: string
+          platform: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          spent_amount: number | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["promotion_status"] | null
+          target_clicks: number | null
+          target_engagement: number | null
+          target_views: number | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+          video_url: string
+        }
+        Insert: {
+          achieved_clicks?: number | null
+          achieved_engagement?: number | null
+          achieved_views?: number | null
+          admin_notes?: string | null
+          budget: number
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          goal?: Database["public"]["Enums"]["promotion_goal"]
+          id?: string
+          platform?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          spent_amount?: number | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["promotion_status"] | null
+          target_clicks?: number | null
+          target_engagement?: number | null
+          target_views?: number | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+          video_url: string
+        }
+        Update: {
+          achieved_clicks?: number | null
+          achieved_engagement?: number | null
+          achieved_views?: number | null
+          admin_notes?: string | null
+          budget?: number
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          goal?: Database["public"]["Enums"]["promotion_goal"]
+          id?: string
+          platform?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          spent_amount?: number | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["promotion_status"] | null
+          target_clicks?: number | null
+          target_engagement?: number | null
+          target_views?: number | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          video_url?: string
         }
         Relationships: []
       }
@@ -1505,6 +1744,26 @@ export type Database = {
           username: string
         }[]
       }
+      get_service_orders: {
+        Args: {
+          p_limit?: number
+          p_service_type?: Database["public"]["Enums"]["service_type"]
+          p_status?: Database["public"]["Enums"]["service_order_status"]
+        }
+        Returns: {
+          admin_notes: string
+          created_at: string
+          id: string
+          price_paid: number
+          service_name: string
+          service_type: Database["public"]["Enums"]["service_type"]
+          status: Database["public"]["Enums"]["service_order_status"]
+          submission_data: Json
+          user_email: string
+          user_id: string
+          user_name: string
+        }[]
+      }
       get_user_claims: {
         Args: { target_user_id: string }
         Returns: {
@@ -1522,6 +1781,24 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]
       }
+      get_video_promotions: {
+        Args: {
+          p_limit?: number
+          p_status?: Database["public"]["Enums"]["promotion_status"]
+        }
+        Returns: {
+          budget: number
+          created_at: string
+          goal: Database["public"]["Enums"]["promotion_goal"]
+          id: string
+          spent_amount: number
+          status: Database["public"]["Enums"]["promotion_status"]
+          title: string
+          user_id: string
+          user_name: string
+          video_url: string
+        }[]
+      }
       has_any_role: {
         Args: {
           _roles: Database["public"]["Enums"]["app_role"][]
@@ -1535,6 +1812,24 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      process_service_order: {
+        Args: {
+          p_action: string
+          p_admin_notes?: string
+          p_order_id: string
+          p_rejection_reason?: string
+        }
+        Returns: Json
+      }
+      process_video_promotion: {
+        Args: {
+          p_action: string
+          p_admin_notes?: string
+          p_promotion_id: string
+          p_rejection_reason?: string
+        }
+        Returns: Json
       }
       resubmit_content: {
         Args: { p_new_video_url: string; p_original_submission_id: string }
@@ -1570,6 +1865,34 @@ export type Database = {
         | "finance"
         | "operations"
         | "support"
+      promotion_goal: "views" | "clicks" | "engagement"
+      promotion_status:
+        | "pending"
+        | "active"
+        | "paused"
+        | "completed"
+        | "cancelled"
+        | "rejected"
+      service_order_status:
+        | "pending"
+        | "in_review"
+        | "processing"
+        | "completed"
+        | "rejected"
+        | "refunded"
+      service_type:
+        | "tiktok_artist_claim"
+        | "audiomack_monetization"
+        | "capcut_template"
+        | "music_blog_basic"
+        | "music_blog_pro"
+        | "music_blog_premium"
+        | "gmb_setup"
+        | "google_maps_optimization"
+        | "business_blog_basic"
+        | "business_blog_pro"
+        | "business_blog_premium"
+        | "seo_content"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1706,6 +2029,37 @@ export const Constants = {
         "finance",
         "operations",
         "support",
+      ],
+      promotion_goal: ["views", "clicks", "engagement"],
+      promotion_status: [
+        "pending",
+        "active",
+        "paused",
+        "completed",
+        "cancelled",
+        "rejected",
+      ],
+      service_order_status: [
+        "pending",
+        "in_review",
+        "processing",
+        "completed",
+        "rejected",
+        "refunded",
+      ],
+      service_type: [
+        "tiktok_artist_claim",
+        "audiomack_monetization",
+        "capcut_template",
+        "music_blog_basic",
+        "music_blog_pro",
+        "music_blog_premium",
+        "gmb_setup",
+        "google_maps_optimization",
+        "business_blog_basic",
+        "business_blog_pro",
+        "business_blog_premium",
+        "seo_content",
       ],
     },
   },

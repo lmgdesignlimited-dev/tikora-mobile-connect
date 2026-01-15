@@ -16,6 +16,23 @@ import Onboarding from "./pages/Onboarding";
 import Wallet from "./pages/Wallet";
 import NotFound from "./pages/NotFound";
 
+// Command Center (Enterprise Admin)
+import {
+  CommandDashboard,
+  CommandModeration,
+  CommandPromotions,
+  CommandServices,
+  CommandCampaigns,
+  CommandUsers,
+  CommandFinance,
+  CommandCrypto,
+  CommandCoins,
+  CommandRoles,
+  CommandActivity,
+  CommandAnalytics,
+  CommandSettings,
+} from "./pages/command";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -36,6 +53,22 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/wallet" element={<Wallet />} />
+            
+            {/* Command Center - Enterprise Admin Panel */}
+            <Route path="/command" element={<CommandDashboard />} />
+            <Route path="/command/moderation" element={<CommandModeration />} />
+            <Route path="/command/promotions" element={<CommandPromotions />} />
+            <Route path="/command/services" element={<CommandServices />} />
+            <Route path="/command/campaigns" element={<CommandCampaigns />} />
+            <Route path="/command/users" element={<CommandUsers />} />
+            <Route path="/command/finance" element={<CommandFinance />} />
+            <Route path="/command/crypto" element={<CommandCrypto />} />
+            <Route path="/command/coins" element={<CommandCoins />} />
+            <Route path="/command/roles" element={<CommandRoles />} />
+            <Route path="/command/activity" element={<CommandActivity />} />
+            <Route path="/command/analytics" element={<CommandAnalytics />} />
+            <Route path="/command/settings" element={<CommandSettings />} />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
