@@ -14,6 +14,8 @@ import Activity from "./pages/Activity";
 import Profile from "./pages/Profile";
 import Onboarding from "./pages/Onboarding";
 import Wallet from "./pages/Wallet";
+import Promote from "./pages/Promote";
+import Services from "./pages/Services";
 import NotFound from "./pages/NotFound";
 
 // Command Center (Enterprise Admin)
@@ -53,6 +55,8 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/wallet" element={<Wallet />} />
+            <Route path="/promote" element={<Promote />} />
+            <Route path="/services" element={<Services />} />
             
             {/* Command Center - Enterprise Admin Panel */}
             <Route path="/command" element={<CommandDashboard />} />

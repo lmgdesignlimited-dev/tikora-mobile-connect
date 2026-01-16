@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -87,10 +87,10 @@ const Index = () => {
           
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" asChild>
-              <a href="/auth">Sign In</a>
+              <Link to="/auth">Sign In</Link>
             </Button>
             <Button variant="gradient" size="sm" asChild>
-              <a href="/auth">Get Started</a>
+              <Link to="/auth">Get Started</Link>
             </Button>
           </div>
         </div>
@@ -115,16 +115,16 @@ const Index = () => {
               
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button variant="hero" size="xl" className="group" asChild>
-                  <a href="/auth">
+                  <Link to="/auth">
                     Create Free Account
                     <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </a>
+                  </Link>
                 </Button>
                 <Button variant="outline" size="xl" className="gap-2" asChild>
-                  <a href="/auth">
+                  <Link to="/auth">
                     <Play className="h-4 w-4" />
                     Watch Demo
-                  </a>
+                  </Link>
                 </Button>
               </div>
 
@@ -264,7 +264,7 @@ const Index = () => {
               </div>
               <div className="mt-8">
                 <Button variant="gradient" size="lg" asChild>
-                  <a href="/auth">Start Your Journey</a>
+                  <Link to="/auth">Start Your Journey</Link>
                 </Button>
               </div>
             </div>
@@ -304,10 +304,10 @@ const Index = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="secondary" size="xl" asChild>
-              <a href="/auth">Create Free Account</a>
+              <Link to="/auth">Create Free Account</Link>
             </Button>
             <Button variant="outline" size="xl" className="border-white/20 text-white hover:bg-white/10" asChild>
-              <a href="/auth">Already a user? Sign In</a>
+              <Link to="/auth">Already a user? Sign In</Link>
             </Button>
           </div>
         </div>
@@ -332,10 +332,10 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-3">Platform</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="/auth" className="hover:text-primary">For Artists</a></li>
-                <li><a href="/auth" className="hover:text-primary">For Influencers</a></li>
-                <li><a href="/auth" className="hover:text-primary">For Businesses</a></li>
-                <li><a href="/auth" className="hover:text-primary">Pricing</a></li>
+                <li><Link to="/auth" className="hover:text-primary">For Artists</Link></li>
+                <li><Link to="/auth" className="hover:text-primary">For Influencers</Link></li>
+                <li><Link to="/auth" className="hover:text-primary">For Businesses</Link></li>
+                <li><Link to="/auth" className="hover:text-primary">Pricing</Link></li>
               </ul>
             </div>
             

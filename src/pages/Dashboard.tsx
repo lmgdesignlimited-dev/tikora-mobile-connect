@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useEffect, useState, useCallback } from 'react';
+import { Navigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Header } from '@/components/layout/Header';
@@ -10,11 +10,13 @@ import { Badge } from '@/components/ui/badge';
 import { ArtistDashboard } from '@/components/dashboard/ArtistDashboard';
 import { InfluencerDashboard } from '@/components/dashboard/InfluencerDashboard';
 import { BusinessDashboard } from '@/components/dashboard/BusinessDashboard';
-import { Music, Camera, Building, Users } from 'lucide-react';
+import { Music, Camera, Building, Users, AlertCircle } from 'lucide-react';
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const [profile, setProfile] = useState<any>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [profileError, setProfileError] = useState<string | null>(null);
   const [stats, setStats] = useState({
     campaigns: 0,
     earnings: 0,
@@ -22,21 +24,22 @@ export default function Dashboard() {
     followers: 0,
   });
 
-  useEffect(() => {
-    if (user) {
-      fetchProfile();
-    }
-  }, [user]);
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
+    if (!user?.id) return;
+    
+    setProfileLoading(true);
+    setProfileError(null);
+    
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('user_id', user.id)
         .maybeSingle();
 
       if (error) {
+        console.error('Profile fetch error:', error);
+        setProfileError('Failed to load profile. Please try again.');
         return;
       }
       
@@ -51,15 +54,28 @@ export default function Dashboard() {
           followers: data.follower_count || 0,
         });
       }
-    } catch {
-      // Silent fail - profile will be null and UI handles gracefully
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      setProfileError('An unexpected error occurred. Please try again.');
+    } finally {
+      setProfileLoading(false);
     }
-  };
+  }, [user?.id]);
 
+  useEffect(() => {
+    if (user?.id) {
+      fetchProfile();
+    }
+  }, [user?.id, fetchProfile]);
+
+  // Show loading while checking auth state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -95,16 +111,41 @@ export default function Dashboard() {
   };
 
   const renderDashboard = () => {
-    // If profile is null, show a message or default dashboard
+    // Show loading state while fetching profile
+    if (profileLoading) {
+      return (
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your dashboard...</p>
+        </div>
+      );
+    }
+
+    // Show error state with retry option
+    if (profileError) {
+      return (
+        <div className="text-center py-12">
+          <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">Something went wrong</h2>
+          <p className="text-muted-foreground mb-4">{profileError}</p>
+          <Button onClick={fetchProfile} variant="outline">
+            Try Again
+          </Button>
+        </div>
+      );
+    }
+
+    // If profile is null, user needs to complete onboarding
     if (!profile) {
       return (
         <div className="text-center py-12">
+          <Users className="h-12 w-12 text-primary mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-4">Welcome to Tikora!</h2>
-          <p className="text-muted-foreground mb-4">
-            We're setting up your dashboard. Please refresh the page if this persists.
+          <p className="text-muted-foreground mb-6">
+            Complete your profile setup to get started.
           </p>
-          <Button onClick={fetchProfile} variant="outline">
-            Retry Loading
+          <Button asChild variant="gradient">
+            <Link to="/onboarding">Complete Setup</Link>
           </Button>
         </div>
       );
