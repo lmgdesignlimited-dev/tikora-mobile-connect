@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminRole } from '@/hooks/useAdminRole';
 import { Header } from '@/components/layout/Header';
@@ -16,7 +16,8 @@ import {
   BarChart3,
   Video,
   Activity,
-  Crown
+  Crown,
+  ExternalLink
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -77,7 +78,7 @@ export default function Admin() {
                 Please contact an administrator if you believe this is an error.
               </p>
               <Button variant="outline" asChild>
-                <a href="/dashboard">Return to Dashboard</a>
+                <Link to="/dashboard">Return to Dashboard</Link>
               </Button>
             </CardContent>
           </Card>
@@ -105,6 +106,12 @@ export default function Admin() {
             <h1 className="text-xl sm:text-2xl font-bold">Admin Panel</h1>
             {getRoleBadge()}
           </div>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/command" className="gap-2">
+              <ExternalLink className="h-4 w-4" />
+              Enterprise Command
+            </Link>
+          </Button>
         </div>
 
         <Tabs defaultValue="overview" className="w-full">
