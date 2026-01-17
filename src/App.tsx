@@ -37,6 +37,7 @@ import {
 
 const queryClient = new QueryClient();
 
+// Force re-render on app mount
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
