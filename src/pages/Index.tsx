@@ -1,4 +1,4 @@
-import { Navigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -31,10 +31,8 @@ const Index = () => {
     );
   }
 
-  // Only redirect after loading is complete AND user exists
-  if (user) {
-    return <Navigate to="/dashboard" replace />;
-  }
+  // Keep landing page accessible even when logged in.
+  // We show a "Go to Dashboard" CTA instead of forcing an automatic redirect.
 
   const features = [
     {
@@ -86,12 +84,25 @@ const Index = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/auth">Sign In</Link>
-            </Button>
-            <Button variant="gradient" size="sm" asChild>
-              <Link to="/auth">Get Started</Link>
-            </Button>
+            {user ? (
+              <>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/dashboard">Dashboard</Link>
+                </Button>
+                <Button variant="gradient" size="sm" asChild>
+                  <Link to="/wallet">Wallet</Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/auth">Sign In</Link>
+                </Button>
+                <Button variant="gradient" size="sm" asChild>
+                  <Link to="/auth">Get Started</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </header>

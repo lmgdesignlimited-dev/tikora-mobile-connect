@@ -74,6 +74,8 @@ export default function CommandDashboard() {
   useEffect(() => {
     if (hasAnyAdminRole) {
       fetchStats();
+    } else {
+      setLoading(false);
     }
   }, [hasAnyAdminRole]);
 
@@ -117,11 +119,23 @@ export default function CommandDashboard() {
             <CardTitle className="text-2xl">Access Denied</CardTitle>
             <CardDescription>
               You don't have permission to access the Command Center.
-              Contact a Super Admin if you believe this is an error.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-center">
-            <Button asChild variant="outline">
+          <CardContent className="text-center space-y-3">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={async () => {
+                setIsBootstrapping(true);
+                const success = await bootstrapAdmin();
+                setIsBootstrapping(false);
+                if (success) toast.success('Admin access granted (first admin)');
+                else toast.error('Bootstrap failed: an admin already exists or access is restricted.');
+              }}
+            >
+              Try First-Admin Bootstrap
+            </Button>
+            <Button asChild variant="outline" className="w-full">
               <a href="/dashboard">Return to Dashboard</a>
             </Button>
           </CardContent>

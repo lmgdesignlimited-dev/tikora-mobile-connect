@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,6 +18,7 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { signIn } = useAuth();
@@ -35,10 +37,12 @@ export function LoginForm() {
       const { error } = await signIn(data.email, data.password);
       if (error) {
         toast.error(error.message);
-      } else {
-        toast.success('Welcome back to Tikora!');
+        return;
       }
-    } catch (error) {
+
+      toast.success('Welcome back to Tikora!');
+      navigate('/dashboard', { replace: true });
+    } catch {
       toast.error('An unexpected error occurred');
     } finally {
       setIsLoading(false);

@@ -20,19 +20,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    // Listen for auth changes FIRST (prevents missing events during init)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
       setLoading(false);
     });
 
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    // THEN get initial session
+    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      setSession(initialSession);
+      setUser(initialSession?.user ?? null);
       setLoading(false);
     });
 
@@ -40,25 +40,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signUp = async (email: string, password: string, userData: any) => {
+    const redirectUrl = `${window.location.origin}/`;
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`
-      }
+        emailRedirectTo: redirectUrl,
+      },
     });
 
     if (data?.user && !error) {
       // Create profile after successful signup
-      await supabase
-        .from('profiles')
-        .insert([
-          {
-            user_id: data.user.id,
-            email: email,
-            ...userData,
-          },
-        ]);
+      const { error: profileError } = await supabase.from('profiles').insert([
+        {
+          user_id: data.user.id,
+          email,
+          ...userData,
+        },
+      ]);
+
+      // Surface profile creation errors, but don't block auth
+      if (profileError) {
+        console.error('Profile insert error:', profileError);
+      }
     }
 
     return { data, error };
