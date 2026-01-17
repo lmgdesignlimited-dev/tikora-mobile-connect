@@ -74,12 +74,25 @@ export default function Admin() {
             </CardHeader>
             <CardContent className="text-center space-y-4">
               <p className="text-muted-foreground">
-                You don't have permission to access the admin panel. 
-                Please contact an administrator if you believe this is an error.
+                You don't have permission to access the admin panel.
               </p>
-              <Button variant="outline" asChild>
-                <Link to="/dashboard">Return to Dashboard</Link>
-              </Button>
+              <div className="grid gap-2">
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    setIsBootstrapping(true);
+                    const success = await bootstrapAdmin();
+                    setIsBootstrapping(false);
+                    if (success) toast.success('Admin access granted (first admin)');
+                    else toast.error('Bootstrap failed: an admin already exists or access is restricted.');
+                  }}
+                >
+                  Try First-Admin Bootstrap
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link to="/dashboard">Return to Dashboard</Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </main>

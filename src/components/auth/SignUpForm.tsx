@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -27,6 +28,7 @@ const signUpSchema = z.object({
 type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export function SignUpForm() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,14 +47,22 @@ export function SignUpForm() {
     setIsLoading(true);
     try {
       const { confirmPassword, ...userData } = data;
-      const { error } = await signUp(data.email, data.password, userData);
-      
+      const { data: signUpData, error } = await signUp(data.email, data.password, userData);
+
       if (error) {
         toast.error(error.message);
-      } else {
-        toast.success('Account created successfully! Welcome to Tikora!');
+        return;
       }
-    } catch (error) {
+
+      // If email confirmation is enabled, session may be null.
+      if (!signUpData?.session) {
+        toast.success('Account created. Please check your email to confirm your account, then sign in.');
+        return;
+      }
+
+      toast.success('Account created successfully! Welcome to Tikora!');
+      navigate('/dashboard', { replace: true });
+    } catch {
       toast.error('An unexpected error occurred');
     } finally {
       setIsLoading(false);
