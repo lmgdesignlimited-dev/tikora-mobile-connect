@@ -343,29 +343,29 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-3">Platform</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="/auth" className="hover:text-primary">For Artists</Link></li>
-                <li><Link to="/auth" className="hover:text-primary">For Influencers</Link></li>
-                <li><Link to="/auth" className="hover:text-primary">For Businesses</Link></li>
-                <li><Link to="/auth" className="hover:text-primary">Pricing</Link></li>
+                <li><Link to="/platform/artists" className="hover:text-primary">For Artists</Link></li>
+                <li><Link to="/platform/influencers" className="hover:text-primary">For Influencers</Link></li>
+                <li><Link to="/platform/businesses" className="hover:text-primary">For Businesses</Link></li>
+                <li><Link to="/pricing" className="hover:text-primary">Pricing</Link></li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-semibold mb-3">Support</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary">Help Center</a></li>
-                <li><a href="#" className="hover:text-primary">Contact Us</a></li>
-                <li><a href="#" className="hover:text-primary">Community</a></li>
-                <li><a href="#" className="hover:text-primary">Blog</a></li>
+                <li><Link to="/help-center" className="hover:text-primary">Help Center</Link></li>
+                <li><Link to="/contact" className="hover:text-primary">Contact Us</Link></li>
+                <li><Link to="/community" className="hover:text-primary">Community</Link></li>
+                <li><Link to="/blog" className="hover:text-primary">Blog</Link></li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-semibold mb-3">Legal</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-primary">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-primary">Cookie Policy</a></li>
+                <li><Link to="/legal/privacy" className="hover:text-primary">Privacy Policy</Link></li>
+                <li><Link to="/legal/terms" className="hover:text-primary">Terms of Service</Link></li>
+                <li><Link to="/legal/cookies" className="hover:text-primary">Cookie Policy</Link></li>
               </ul>
             </div>
           </div>

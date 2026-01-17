@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { OnboardingWizard } from '@/components/onboarding';
+import { OnboardingWizard, RoleSelect } from '@/components/onboarding';
 
 export default function Onboarding() {
   const { user, loading } = useAuth();
@@ -21,19 +21,19 @@ export default function Onboarding() {
           .from('onboarding_progress')
           .select('*')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (onboarding?.is_completed) {
           setIsComplete(true);
           return;
         }
 
-        // Get user type from profile
+        // Get user type from profile (may not exist yet)
         const { data: profile } = await supabase
           .from('profiles')
           .select('user_type')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (profile?.user_type) {
           setUserType(profile.user_type as 'artist' | 'influencer' | 'business');
@@ -67,7 +67,11 @@ export default function Onboarding() {
   }
 
   if (!userType) {
-    return <Navigate to="/auth" replace />;
+    return (
+      <RoleSelect
+        onSelected={(type) => setUserType(type)}
+      />
+    );
   }
 
   return (

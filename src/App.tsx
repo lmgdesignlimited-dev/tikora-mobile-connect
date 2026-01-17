@@ -16,6 +16,20 @@ import Onboarding from "./pages/Onboarding";
 import Wallet from "./pages/Wallet";
 import Promote from "./pages/Promote";
 import Services from "./pages/Services";
+
+// Marketing / Support / Legal
+import ForArtists from "./pages/marketing/ForArtists";
+import ForInfluencers from "./pages/marketing/ForInfluencers";
+import ForBusinesses from "./pages/marketing/ForBusinesses";
+import Pricing from "./pages/marketing/Pricing";
+import HelpCenter from "./pages/support/HelpCenter";
+import Contact from "./pages/support/Contact";
+import Community from "./pages/support/Community";
+import Blog from "./pages/support/Blog";
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import TermsOfService from "./pages/legal/TermsOfService";
+import CookiePolicy from "./pages/legal/CookiePolicy";
+
 import NotFound from "./pages/NotFound";
 
 // Command Center (Enterprise Admin)
@@ -50,6 +64,20 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/admin" element={<Admin />} />
+
+            {/* Public marketing pages */}
+            <Route path="/platform/artists" element={<ForArtists />} />
+            <Route path="/platform/influencers" element={<ForInfluencers />} />
+            <Route path="/platform/businesses" element={<ForBusinesses />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/help-center" element={<HelpCenter />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/legal/privacy" element={<PrivacyPolicy />} />
+            <Route path="/legal/terms" element={<TermsOfService />} />
+            <Route path="/legal/cookies" element={<CookiePolicy />} />
+
             <Route path="/explore" element={<Explore />} />
             <Route path="/create" element={<Create />} />
             <Route path="/activity" element={<Activity />} />

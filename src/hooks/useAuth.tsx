@@ -20,6 +20,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const ensureProfile = async (nextSession: Session | null) => {
+      if (!nextSession?.user) return;
+
+      const meta = (nextSession.user.user_metadata ?? {}) as any;
+      // If we don't know the user's role yet, onboarding will collect it.
+      if (!meta?.user_type) return;
+
+      const email = nextSession.user.email ?? meta.email ?? null;
+      const full_name = meta.full_name ?? (email ? email.split('@')[0] : 'User');
+
+      try {
+        const { data: existing, error: existingError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('user_id', nextSession.user.id)
+          .maybeSingle();
+
+        if (existingError) return;
+        if (existing) return;
+
+        await supabase.from('profiles').insert([
+          {
+            user_id: nextSession.user.id,
+            email,
+            full_name,
+            user_type: meta.user_type,
+            phone: meta.phone ?? null,
+          },
+        ]);
+      } catch {
+        // Silent: onboarding can recover.
+      }
+    };
+
     // Listen for auth changes FIRST (prevents missing events during init)
     const {
       data: { subscription },
@@ -27,6 +61,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
       setLoading(false);
+
+      // Never call Supabase directly inside this callback.
+      setTimeout(() => {
+        void ensureProfile(nextSession);
+      }, 0);
     });
 
     // THEN get initial session
@@ -34,6 +73,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(initialSession);
       setUser(initialSession?.user ?? null);
       setLoading(false);
+
+      setTimeout(() => {
+        void ensureProfile(initialSession);
+      }, 0);
     });
 
     return () => subscription.unsubscribe();
@@ -47,12 +90,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       password,
       options: {
         emailRedirectTo: redirectUrl,
+        // Persist onboarding-critical info so we can safely create the profile
+        // even if profile insert fails during signup (e.g. email confirmation flow)
+        data: {
+          ...userData,
+        },
       },
     });
 
-    if (data?.user && !error) {
-      // Create profile after successful signup
-      const { error: profileError } = await supabase.from('profiles').insert([
+    // Attempt profile creation when a session exists (RLS usually requires auth)
+    if (data?.user && data?.session && !error) {
+      const { error: profileError } = await supabase.from('profiles').upsert([
         {
           user_id: data.user.id,
           email,
@@ -60,9 +108,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       ]);
 
-      // Surface profile creation errors, but don't block auth
       if (profileError) {
-        console.error('Profile insert error:', profileError);
+        // Don't block auth; onboarding will recover.
+        console.error('Profile upsert error:', profileError);
       }
     }
 
