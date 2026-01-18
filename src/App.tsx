@@ -47,6 +47,7 @@ import {
   CommandActivity,
   CommandAnalytics,
   CommandSettings,
+  CommandPricing,
 } from "./pages/command";
 
 const queryClient = new QueryClient();
@@ -101,6 +102,7 @@ const App = () => (
             <Route path="/command/activity" element={<CommandActivity />} />
             <Route path="/command/analytics" element={<CommandAnalytics />} />
             <Route path="/command/settings" element={<CommandSettings />} />
+            <Route path="/command/pricing" element={<CommandPricing />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

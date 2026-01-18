@@ -12,3 +12,4 @@ export { default as CommandRoles } from './CommandRoles';
 export { default as CommandActivity } from './CommandActivity';
 export { default as CommandAnalytics } from './CommandAnalytics';
 export { default as CommandSettings } from './CommandSettings';
+export { default as CommandPricing } from './CommandPricing';

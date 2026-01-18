@@ -226,26 +226,43 @@ export default function Services() {
     switch (type) {
       case 'tiktok_artist_claim':
         return [
-          { key: 'tiktok_username', label: 'TikTok Username', placeholder: '@username' },
-          { key: 'artist_name', label: 'Artist/Stage Name', placeholder: 'Your artist name' },
-          { key: 'proof_link', label: 'Proof of Ownership (Spotify/Apple Music Link)', placeholder: 'https://...' }
+          { key: 'tiktok_username', label: 'TikTok Username', placeholder: '@username', type: 'text' },
+          { key: 'artist_name', label: 'Artist/Stage Name', placeholder: 'Your artist name', type: 'text' },
+          { key: 'real_name', label: 'Legal Full Name', placeholder: 'As shown on ID', type: 'text' },
+          { key: 'email', label: 'Email Address', placeholder: 'email@example.com', type: 'text' },
+          { key: 'phone', label: 'Phone Number', placeholder: '+234...', type: 'text' },
+          { key: 'spotify_link', label: 'Spotify Artist Link', placeholder: 'https://open.spotify.com/artist/...', type: 'text' },
+          { key: 'apple_music_link', label: 'Apple Music Artist Link', placeholder: 'https://music.apple.com/artist/...', type: 'text' },
+          { key: 'distributor', label: 'Music Distributor', placeholder: 'DistroKid, TuneCore, CD Baby, etc.', type: 'text' },
+          { key: 'social_proof', label: 'Instagram/Twitter Handle', placeholder: '@username', type: 'text' },
         ];
       case 'audiomack_monetization':
         return [
-          { key: 'audiomack_username', label: 'Audiomack Username', placeholder: 'username' },
-          { key: 'email', label: 'Email Address', placeholder: 'email@example.com' }
+          { key: 'audiomack_username', label: 'Audiomack Username', placeholder: 'username', type: 'text' },
+          { key: 'email', label: 'Email Address', placeholder: 'email@example.com', type: 'text' },
+          { key: 'artist_name', label: 'Artist Name', placeholder: 'Your artist name', type: 'text' },
+          { key: 'country', label: 'Country of Residence', placeholder: 'Nigeria', type: 'text' },
+        ];
+      case 'capcut_template':
+        return [
+          { key: 'template_style', label: 'Template Style', placeholder: 'Dance, Lyric video, Transition, etc.', type: 'text' },
+          { key: 'song_name', label: 'Song Name', placeholder: 'Name of the song', type: 'text' },
+          { key: 'audio_link', label: 'Audio/Video Link', placeholder: 'Link to the audio or reference video', type: 'text' },
+          { key: 'special_requests', label: 'Special Requests', placeholder: 'Any specific effects or style you want', type: 'textarea' },
         ];
       case 'gmb_setup':
       case 'google_maps_optimization':
         return [
-          { key: 'business_name', label: 'Business Name', placeholder: 'Your Business' },
-          { key: 'business_address', label: 'Business Address', placeholder: 'Full address' },
-          { key: 'phone', label: 'Phone Number', placeholder: '+234...' },
-          { key: 'category', label: 'Business Category', placeholder: 'Restaurant, Salon, etc.' }
+          { key: 'business_name', label: 'Business Name', placeholder: 'Your Business', type: 'text' },
+          { key: 'business_address', label: 'Business Address', placeholder: 'Full address', type: 'text' },
+          { key: 'phone', label: 'Phone Number', placeholder: '+234...', type: 'text' },
+          { key: 'category', label: 'Business Category', placeholder: 'Restaurant, Salon, etc.', type: 'text' },
+          { key: 'website', label: 'Website (if any)', placeholder: 'https://...', type: 'text' },
+          { key: 'business_hours', label: 'Business Hours', placeholder: 'Mon-Fri 9AM-5PM', type: 'text' },
         ];
       default:
         return [
-          { key: 'details', label: 'Additional Details', placeholder: 'Tell us what you need...' }
+          { key: 'details', label: 'Additional Details', placeholder: 'Tell us what you need...', type: 'textarea' }
         ];
     }
   };

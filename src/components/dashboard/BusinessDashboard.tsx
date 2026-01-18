@@ -16,13 +16,11 @@ import {
   TrendingUp, 
   Users, 
   DollarSign, 
-  Target,
   Plus,
   Package,
   Truck,
   CheckCircle,
   Clock,
-  BarChart3,
   UserPlus,
   Music,
   Film,
@@ -211,18 +209,10 @@ export function BusinessDashboard() {
             Launch campaigns and track your marketing performance
           </p>
         </div>
-        <div className="flex gap-2">
-          <Link to="/admin">
-            <Button variant="outline" className="gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Admin
-            </Button>
-          </Link>
-          <Button onClick={handleCreateCampaign} variant="gradient" className="gap-2">
-            <Plus className="h-4 w-4" />
-            New Campaign
-          </Button>
-        </div>
+        <Button onClick={handleCreateCampaign} variant="gradient" className="gap-2">
+          <Plus className="h-4 w-4" />
+          New Campaign
+        </Button>
       </div>
 
       {/* Stats Cards */}
