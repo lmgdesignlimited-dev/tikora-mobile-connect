@@ -89,6 +89,12 @@ const navItems: NavItem[] = [
     roles: ['admin', 'super_admin', 'finance'],
   },
   { 
+    icon: CreditCard, 
+    label: 'Pricing', 
+    href: '/command/pricing',
+    roles: ['admin', 'super_admin'],
+  },
+  { 
     icon: Bitcoin, 
     label: 'Crypto', 
     href: '/command/crypto',

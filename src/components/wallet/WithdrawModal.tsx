@@ -73,7 +73,8 @@ export function WithdrawModal({
   const [saveBankDetails, setSaveBankDetails] = useState(false);
 
   const minWithdrawal = 1000;
-  const withdrawalFee = 50;
+  const withdrawalFeePercent = 3.5; // 3.5% withdrawal fee
+  const withdrawalFee = Math.max(50, Math.ceil((Number(amount) || 0) * withdrawalFeePercent / 100));
 
   const handleWithdraw = async () => {
     const withdrawAmount = Number(amount);
@@ -83,9 +84,9 @@ export function WithdrawModal({
       return;
     }
 
-    if (withdrawAmount + withdrawalFee > walletBalance) {
-      toast.error('Insufficient balance (including ₦50 fee)');
-      return;
+    const calculatedFee = Math.max(50, Math.ceil(withdrawAmount * withdrawalFeePercent / 100));
+    if (withdrawAmount + calculatedFee > walletBalance) {
+      toast.error(`Insufficient balance (including ${withdrawalFeePercent}% fee)`);
     }
 
     if (!bankName || !accountNumber || !accountName) {
@@ -123,11 +124,12 @@ export function WithdrawModal({
 
       if (txError) throw txError;
 
-      // Deduct from wallet balance
+      // Deduct from wallet balance (recalculate fee)
+      const calculatedFee = Math.max(50, Math.ceil(withdrawAmount * withdrawalFeePercent / 100));
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ 
-          wallet_balance: walletBalance - withdrawAmount - withdrawalFee 
+          wallet_balance: walletBalance - withdrawAmount - calculatedFee 
         })
         .eq('user_id', user?.id);
 
@@ -195,8 +197,14 @@ export function WithdrawModal({
             />
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Min: ₦{minWithdrawal.toLocaleString()}</span>
-              <span>Fee: ₦{withdrawalFee}</span>
+              <span>Fee: {withdrawalFeePercent}% (min ₦50)</span>
             </div>
+            {amount && Number(amount) >= minWithdrawal && (
+              <p className="text-sm">
+                Fee: <span className="font-semibold text-warning">₦{withdrawalFee.toLocaleString()}</span> | 
+                You'll receive: <span className="font-semibold text-success">₦{(Number(amount)).toLocaleString()}</span>
+              </p>
+            )}
             {amount && Number(amount) > 0 && (
               <p className="text-sm">
                 You'll receive: <span className="font-semibold">₦{(Number(amount)).toLocaleString()}</span>
