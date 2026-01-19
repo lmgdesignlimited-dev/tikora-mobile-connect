@@ -2,3 +2,15 @@ project_id = "cqgkjkjuncuglghorcnx"
 
 [functions.create-test-users]
 verify_jwt = false
+
+[functions.save-gateway-secret]
+verify_jwt = false
+
+[functions.payment-webhook]
+verify_jwt = false
+
+[functions.process-payment]
+verify_jwt = false
+
+[functions.send-notification-email]
+verify_jwt = false
