@@ -18,6 +18,8 @@ import {
   DollarSign
 } from 'lucide-react';
 import heroImage from '@/assets/tikora-hero-image.jpg';
+import tikoraLogo from '@/assets/tikora-logo.png';
+import tikoraIcon from '@/assets/tikora-icon.png';
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -76,12 +78,10 @@ const Index = () => {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">
-              <span className="text-white font-bold text-sm">T</span>
-            </div>
-            <span className="font-bold text-xl text-gradient-primary">Tikora</span>
-          </div>
+          <Link to="/" className="flex items-center gap-2">
+            <img src={tikoraIcon} alt="Tikora" className="w-9 h-9 rounded-lg" />
+            <span className="font-bold text-xl text-foreground hidden sm:block">Tikora</span>
+          </Link>
           
           <div className="flex items-center gap-3">
             {user ? (
@@ -329,12 +329,10 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">T</span>
-                </div>
-                <span className="font-bold text-xl text-gradient-primary">Tikora</span>
-              </div>
+              <Link to="/" className="flex items-center gap-2 mb-4">
+                <img src={tikoraIcon} alt="Tikora" className="w-9 h-9 rounded-lg" />
+                <span className="font-bold text-xl text-foreground">Tikora</span>
+              </Link>
               <p className="text-muted-foreground text-sm mb-4">
                 The ultimate influencer and creator marketplace connecting Africa's creative community.
               </p>
