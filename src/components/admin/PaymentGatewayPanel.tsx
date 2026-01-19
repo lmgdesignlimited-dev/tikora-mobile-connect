@@ -113,27 +113,32 @@ export function PaymentGatewayPanel() {
 
     setSaving(gatewayName);
     try {
-      // Note: In production, you'd save secrets via edge functions or vault
-      // For now, we'll mark the gateway as configured
-      const { error } = await supabase
-        .from('payment_gateway_config')
-        .update({ 
-          is_configured: true,
-          last_verified_at: new Date().toISOString(),
-        })
-        .eq('gateway_name', gatewayName);
+      // Get user session for auth header
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Please log in to configure payment gateways');
+        return;
+      }
+
+      // Call edge function to securely save the secret
+      const { data, error } = await supabase.functions.invoke('save-gateway-secret', {
+        body: {
+          gateway_name: gatewayName,
+          secret_key: secretKey,
+          test_mode: true,
+        },
+      });
 
       if (error) throw error;
 
-      // The actual secret should be added via Lovable's secrets management
-      toast.success(`${gatewayName} configured! Please add ${gatewayName.toUpperCase()}_SECRET_KEY to your backend secrets.`);
-      toast.info(`Secret key: ${secretKey.slice(0, 10)}...${secretKey.slice(-4)}`, { duration: 10000 });
+      toast.success(`${gatewayName} gateway configured successfully!`);
+      toast.info(`Remember to set ${gatewayName.toUpperCase()}_SECRET_KEY in your backend environment`, { duration: 8000 });
       
       setSecretInputs(prev => ({ ...prev, [gatewayName]: '' }));
       loadData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving secret:', error);
-      toast.error('Failed to configure gateway');
+      toast.error(error.message || 'Failed to configure gateway');
     } finally {
       setSaving(null);
     }
