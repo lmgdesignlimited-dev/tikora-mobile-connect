@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import tikoraIcon from '@/assets/tikora-icon.png';
 
 export function MarketingPageShell({
   title,
@@ -16,10 +17,8 @@ export function MarketingPageShell({
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">
-              <span className="text-white font-bold text-sm">T</span>
-            </div>
-            <span className="font-bold text-xl text-gradient-primary">Tikora</span>
+            <img src={tikoraIcon} alt="Tikora" className="w-9 h-9 rounded-lg" />
+            <span className="font-bold text-xl text-foreground">Tikora</span>
           </Link>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" asChild>

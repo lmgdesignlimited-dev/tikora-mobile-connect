@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Menu, Search, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/hooks/useAuth';
 import { NotificationDropdown } from '@/components/notifications';
+import tikoraIcon from '@/assets/tikora-icon.png';
 
 interface HeaderProps {
   onMenuToggle?: () => void;
@@ -31,14 +33,12 @@ export function Header({ onMenuToggle, showSearch = true }: HeaderProps) {
             </Button>
           )}
           
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">
-              <span className="text-white font-bold text-sm">T</span>
-            </div>
-            <span className="font-bold text-xl text-gradient-primary hidden sm:block">
+          <Link to="/" className="flex items-center gap-2">
+            <img src={tikoraIcon} alt="Tikora" className="w-9 h-9 rounded-lg" />
+            <span className="font-bold text-xl text-foreground hidden sm:block">
               Tikora
             </span>
-          </div>
+          </Link>
         </div>
 
         {/* Center section - Search */}
