@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { FileUpload } from '@/components/ui/file-upload';
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,7 @@ import {
   AlertCircle,
   CheckCircle,
   Loader2,
+  Upload,
 } from 'lucide-react';
 
 interface ApplyGigModalProps {
@@ -51,6 +53,7 @@ export function ApplyGigModal({ open, onOpenChange, campaign, onSuccess }: Apply
   const [customPrice, setCustomPrice] = useState('');
   const [portfolioLink1, setPortfolioLink1] = useState('');
   const [portfolioLink2, setPortfolioLink2] = useState('');
+  const [portfolioVideos, setPortfolioVideos] = useState<string[]>([]);
   const [proposal, setProposal] = useState('');
   const [hasGoodCamera, setHasGoodCamera] = useState(false);
   const [hasGoodLighting, setHasGoodLighting] = useState(false);
@@ -69,8 +72,9 @@ export function ApplyGigModal({ open, onOpenChange, campaign, onSuccess }: Apply
       return;
     }
 
-    if (!portfolioLink1) {
-      toast.error('Please provide at least one portfolio sample');
+    const hasPortfolio = portfolioLink1 || portfolioVideos.length > 0;
+    if (!hasPortfolio) {
+      toast.error('Please provide at least one portfolio sample (link or upload)');
       return;
     }
 
@@ -81,13 +85,19 @@ export function ApplyGigModal({ open, onOpenChange, campaign, onSuccess }: Apply
 
     setLoading(true);
     try {
+      // Combine video URLs and uploaded videos
+      const allPortfolioItems = [
+        ...([portfolioLink1, portfolioLink2].filter(Boolean)),
+        ...portfolioVideos
+      ];
+
       const { error } = await supabase
         .from('campaign_applications')
         .insert({
           campaign_id: campaign.id,
           influencer_id: user.id,
           proposed_rate: finalPrice,
-          portfolio_links: [portfolioLink1, portfolioLink2].filter(Boolean),
+          portfolio_links: allPortfolioItems,
           proposal: proposal || null,
           status: 'pending',
           estimated_reach: 0
@@ -124,10 +134,13 @@ export function ApplyGigModal({ open, onOpenChange, campaign, onSuccess }: Apply
     setCustomPrice('');
     setPortfolioLink1('');
     setPortfolioLink2('');
+    setPortfolioVideos([]);
     setProposal('');
     setHasGoodCamera(false);
     setHasGoodLighting(false);
   };
+
+  const hasValidPortfolio = portfolioLink1 || portfolioVideos.length > 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -223,14 +236,36 @@ export function ApplyGigModal({ open, onOpenChange, campaign, onSuccess }: Apply
             </div>
           </div>
 
-          {/* Portfolio Links */}
+          {/* Portfolio Links & Uploads */}
           <div className="space-y-3">
             <Label className="flex items-center gap-2">
               <Video className="h-4 w-4" />
               Portfolio Samples (past work)
             </Label>
+            
+            {/* File Upload */}
+            <FileUpload
+              bucket="portfolio"
+              folder={user?.id || 'anonymous'}
+              accept="image/*,video/*"
+              maxSize={50}
+              multiple
+              onUploadComplete={(urls) => setPortfolioVideos(urls)}
+              label="Upload videos or screenshots"
+              hint="Upload your best video work (max 50MB each)"
+            />
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or paste links</span>
+              </div>
+            </div>
+
             <Input
-              placeholder="https://tiktok.com/@you/video/... (required)"
+              placeholder="https://tiktok.com/@you/video/..."
               value={portfolioLink1}
               onChange={(e) => setPortfolioLink1(e.target.value)}
             />
@@ -267,8 +302,8 @@ export function ApplyGigModal({ open, onOpenChange, campaign, onSuccess }: Apply
                 {hasGoodLighting ? <CheckCircle className="h-3 w-3" /> : null}
                 Lighting
               </Badge>
-              <Badge variant={portfolioLink1 ? 'default' : 'outline'} className="gap-1">
-                {portfolioLink1 ? <CheckCircle className="h-3 w-3" /> : null}
+              <Badge variant={hasValidPortfolio ? 'default' : 'outline'} className="gap-1">
+                {hasValidPortfolio ? <CheckCircle className="h-3 w-3" /> : null}
                 Portfolio
               </Badge>
             </div>
@@ -281,7 +316,7 @@ export function ApplyGigModal({ open, onOpenChange, campaign, onSuccess }: Apply
           </Button>
           <Button
             onClick={handleApply}
-            disabled={loading || !hasGoodCamera || !hasGoodLighting || !portfolioLink1}
+            disabled={loading || !hasGoodCamera || !hasGoodLighting || !hasValidPortfolio}
             variant="gradient"
           >
             {loading ? (
