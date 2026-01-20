@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { FileUpload } from '@/components/ui/file-upload';
 import { 
   Sparkles, 
   Music, 
@@ -29,7 +30,8 @@ import {
   Loader2,
   Wallet,
   Star,
-  Package
+  Package,
+  Upload
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -235,6 +237,8 @@ export default function Services() {
           { key: 'apple_music_link', label: 'Apple Music Artist Link', placeholder: 'https://music.apple.com/artist/...', type: 'text' },
           { key: 'distributor', label: 'Music Distributor', placeholder: 'DistroKid, TuneCore, CD Baby, etc.', type: 'text' },
           { key: 'social_proof', label: 'Instagram/Twitter Handle', placeholder: '@username', type: 'text' },
+          { key: 'id_document', label: 'Upload ID Document (Passport/National ID)', placeholder: '', type: 'file' },
+          { key: 'artist_photo', label: 'Upload Artist Photo', placeholder: '', type: 'file' },
         ];
       case 'audiomack_monetization':
         return [
@@ -242,12 +246,14 @@ export default function Services() {
           { key: 'email', label: 'Email Address', placeholder: 'email@example.com', type: 'text' },
           { key: 'artist_name', label: 'Artist Name', placeholder: 'Your artist name', type: 'text' },
           { key: 'country', label: 'Country of Residence', placeholder: 'Nigeria', type: 'text' },
+          { key: 'id_document', label: 'Upload ID Document', placeholder: '', type: 'file' },
         ];
       case 'capcut_template':
         return [
           { key: 'template_style', label: 'Template Style', placeholder: 'Dance, Lyric video, Transition, etc.', type: 'text' },
           { key: 'song_name', label: 'Song Name', placeholder: 'Name of the song', type: 'text' },
-          { key: 'audio_link', label: 'Audio/Video Link', placeholder: 'Link to the audio or reference video', type: 'text' },
+          { key: 'audio_file', label: 'Upload Audio/Video File', placeholder: '', type: 'file' },
+          { key: 'reference_video', label: 'Reference Video (optional)', placeholder: '', type: 'file' },
           { key: 'special_requests', label: 'Special Requests', placeholder: 'Any specific effects or style you want', type: 'textarea' },
         ];
       case 'gmb_setup':
@@ -259,10 +265,12 @@ export default function Services() {
           { key: 'category', label: 'Business Category', placeholder: 'Restaurant, Salon, etc.', type: 'text' },
           { key: 'website', label: 'Website (if any)', placeholder: 'https://...', type: 'text' },
           { key: 'business_hours', label: 'Business Hours', placeholder: 'Mon-Fri 9AM-5PM', type: 'text' },
+          { key: 'business_photos', label: 'Upload Business Photos', placeholder: '', type: 'file' },
         ];
       default:
         return [
-          { key: 'details', label: 'Additional Details', placeholder: 'Tell us what you need...', type: 'textarea' }
+          { key: 'details', label: 'Additional Details', placeholder: 'Tell us what you need...', type: 'textarea' },
+          { key: 'attachments', label: 'Attachments (optional)', placeholder: '', type: 'file' },
         ];
     }
   };
@@ -524,11 +532,24 @@ export default function Services() {
                 </CardContent>
               </Card>
 
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
                 {getRequiredFields(selectedPackage.service_type).map((field) => (
                   <div key={field.key} className="space-y-2">
                     <Label>{field.label}</Label>
-                    {field.key === 'details' ? (
+                    {field.type === 'file' ? (
+                      <FileUpload
+                        bucket="service-documents"
+                        folder={user?.id}
+                        accept="image/*,application/pdf,video/*"
+                        maxSize={10}
+                        multiple={field.key.includes('photos')}
+                        onUploadComplete={(urls) => setSubmissionData(prev => ({ 
+                          ...prev, 
+                          [field.key]: field.key.includes('photos') ? urls.join(',') : urls[0] || ''
+                        }))}
+                        hint={field.key.includes('photos') ? 'Upload multiple images' : 'Max 10MB'}
+                      />
+                    ) : field.type === 'textarea' ? (
                       <Textarea
                         placeholder={field.placeholder}
                         value={submissionData[field.key] || ''}
