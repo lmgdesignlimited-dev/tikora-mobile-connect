@@ -17,7 +17,7 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-export function LoginForm() {
+export function LoginForm({ onForgotPassword }: { onForgotPassword?: () => void }) {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -103,6 +103,20 @@ export function LoginForm() {
             <p className="text-sm text-destructive">{errors.password.message}</p>
           )}
         </div>
+
+        {onForgotPassword && (
+          <div className="text-right">
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              className="text-xs text-muted-foreground px-0"
+              onClick={onForgotPassword}
+            >
+              Forgot password?
+            </Button>
+          </div>
+        )}
 
         <Button
           type="submit"

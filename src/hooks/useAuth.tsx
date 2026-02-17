@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }, 0);
     });
 
-    // THEN get initial session
+    // THEN get initial session — handle stale/invalid refresh tokens gracefully
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
       setSession(initialSession);
       setUser(initialSession?.user ?? null);
@@ -77,6 +77,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setTimeout(() => {
         void ensureProfile(initialSession);
       }, 0);
+    }).catch(() => {
+      // Stale refresh token or network error — clear session so UI doesn't loop
+      setSession(null);
+      setUser(null);
+      setLoading(false);
+      supabase.auth.signOut().catch(() => {});
     });
 
     return () => subscription.unsubscribe();
@@ -129,7 +135,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
-    return await supabase.auth.resetPasswordForEmail(email);
+    return await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
   };
 
   const value = {
