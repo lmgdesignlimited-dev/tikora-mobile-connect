@@ -1072,15 +1072,19 @@ export type Database = {
           country: string | null
           created_at: string
           crypto_wallet_address: string | null
+          custom_price: number | null
           email: string | null
+          equipment_quality: string | null
           follower_count: number | null
           following_count: number | null
           full_name: string
           id: string
+          influencer_tier: string | null
           is_active: boolean | null
           is_boosted: boolean | null
           location: string | null
           phone: string | null
+          platforms: string[] | null
           preferred_currency: string | null
           rating: number | null
           social_links: Json | null
@@ -1113,15 +1117,19 @@ export type Database = {
           country?: string | null
           created_at?: string
           crypto_wallet_address?: string | null
+          custom_price?: number | null
           email?: string | null
+          equipment_quality?: string | null
           follower_count?: number | null
           following_count?: number | null
           full_name: string
           id?: string
+          influencer_tier?: string | null
           is_active?: boolean | null
           is_boosted?: boolean | null
           location?: string | null
           phone?: string | null
+          platforms?: string[] | null
           preferred_currency?: string | null
           rating?: number | null
           social_links?: Json | null
@@ -1154,15 +1162,19 @@ export type Database = {
           country?: string | null
           created_at?: string
           crypto_wallet_address?: string | null
+          custom_price?: number | null
           email?: string | null
+          equipment_quality?: string | null
           follower_count?: number | null
           following_count?: number | null
           full_name?: string
           id?: string
+          influencer_tier?: string | null
           is_active?: boolean | null
           is_boosted?: boolean | null
           location?: string | null
           phone?: string | null
+          platforms?: string[] | null
           preferred_currency?: string | null
           rating?: number | null
           social_links?: Json | null
