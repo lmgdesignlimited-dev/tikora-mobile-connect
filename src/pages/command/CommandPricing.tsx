@@ -44,6 +44,16 @@ interface ServicePackage {
   is_active: boolean;
 }
 
+interface CampaignPrice {
+  id: string;
+  campaign_type: string;
+  content_style: string;
+  influencer_tier: string;
+  base_price: number;
+  region: string | null;
+  is_active: boolean | null;
+}
+
 interface CoinPackage {
   id: string;
   name: string;
@@ -71,6 +81,8 @@ export default function CommandPricing() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<number>(0);
 
+  const [campaignPrices, setCampaignPrices] = useState<CampaignPrice[]>([]);
+
   useEffect(() => {
     loadData();
   }, []);
@@ -78,15 +90,17 @@ export default function CommandPricing() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [servicesRes, coinsRes, settingsRes] = await Promise.all([
+      const [servicesRes, coinsRes, settingsRes, pricingRes] = await Promise.all([
         supabase.from('service_packages').select('*').order('category', { ascending: true }),
         supabase.from('coin_packages').select('*').order('coin_amount', { ascending: true }),
         supabase.from('platform_settings').select('*').eq('category', 'pricing'),
+        supabase.from('campaign_pricing').select('*').order('campaign_type', { ascending: true }),
       ]);
 
       if (servicesRes.data) setServicePackages(servicesRes.data);
       if (coinsRes.data) setCoinPackages(coinsRes.data);
       if (settingsRes.data) setPlatformSettings(settingsRes.data);
+      if (pricingRes.data) setCampaignPrices(pricingRes.data);
     } catch (error) {
       console.error('Error loading pricing data:', error);
       toast.error('Failed to load pricing data');
@@ -147,6 +161,26 @@ export default function CommandPricing() {
     } catch (error) {
       console.error('Error updating coin package:', error);
       toast.error('Failed to update');
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  const updateCampaignPrice = async (id: string, newPrice: number) => {
+    setSaving(id);
+    try {
+      const { error } = await supabase
+        .from('campaign_pricing')
+        .update({ base_price: newPrice })
+        .eq('id', id);
+
+      if (error) throw error;
+      toast.success('Campaign price updated');
+      setEditingId(null);
+      loadData();
+    } catch (error) {
+      console.error('Error updating campaign price:', error);
+      toast.error('Failed to update price');
     } finally {
       setSaving(null);
     }
@@ -225,6 +259,10 @@ export default function CommandPricing() {
             <TabsTrigger value="fees" className="gap-2">
               <Percent className="h-4 w-4" />
               Platform Fees
+            </TabsTrigger>
+            <TabsTrigger value="campaign" className="gap-2">
+              <DollarSign className="h-4 w-4" />
+              Campaign Prices
             </TabsTrigger>
           </TabsList>
 
@@ -578,6 +616,113 @@ export default function CommandPricing() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="campaign" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Campaign Pricing by Type & Tier</CardTitle>
+                <CardDescription>
+                  Set base prices for each campaign type, content style, and influencer tier combination
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Campaign Type</TableHead>
+                      <TableHead>Content Style</TableHead>
+                      <TableHead>Influencer Tier</TableHead>
+                      <TableHead>Region</TableHead>
+                      <TableHead>Base Price (₦)</TableHead>
+                      <TableHead>Active</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {campaignPrices.map((cp) => (
+                      <TableRow key={cp.id}>
+                        <TableCell>
+                          <Badge variant="outline" className="capitalize">{cp.campaign_type}</Badge>
+                        </TableCell>
+                        <TableCell className="capitalize">{cp.content_style}</TableCell>
+                        <TableCell>
+                          <Badge className="capitalize">{cp.influencer_tier}</Badge>
+                        </TableCell>
+                        <TableCell>{cp.region || 'NG'}</TableCell>
+                        <TableCell>
+                          {editingId === `cp-${cp.id}` ? (
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="number"
+                                value={editValue}
+                                onChange={(e) => setEditValue(Number(e.target.value))}
+                                className="w-24 h-8"
+                              />
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8"
+                                onClick={() => updateCampaignPrice(cp.id, editValue)}
+                                disabled={saving === cp.id}
+                              >
+                                <Check className="h-4 w-4 text-success" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8"
+                                onClick={() => setEditingId(null)}
+                              >
+                                <X className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">₦{cp.base_price.toLocaleString()}</span>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-6 w-6"
+                                onClick={() => {
+                                  setEditingId(`cp-${cp.id}`);
+                                  setEditValue(cp.base_price);
+                                }}
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Switch
+                            checked={cp.is_active ?? true}
+                            onCheckedChange={async (checked) => {
+                              const { error } = await supabase
+                                .from('campaign_pricing')
+                                .update({ is_active: checked })
+                                .eq('id', cp.id);
+                              if (error) {
+                                toast.error('Failed to update');
+                              } else {
+                                toast.success(`Price rule ${checked ? 'enabled' : 'disabled'}`);
+                                loadData();
+                              }
+                            }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {campaignPrices.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                          No campaign pricing rules configured yet
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

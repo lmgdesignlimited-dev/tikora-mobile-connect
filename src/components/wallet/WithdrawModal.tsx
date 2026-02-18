@@ -87,6 +87,7 @@ export function WithdrawModal({
     const calculatedFee = Math.max(50, Math.ceil(withdrawAmount * withdrawalFeePercent / 100));
     if (withdrawAmount + calculatedFee > walletBalance) {
       toast.error(`Insufficient balance (including ${withdrawalFeePercent}% fee)`);
+      return;
     }
 
     if (!bankName || !accountNumber || !accountName) {
