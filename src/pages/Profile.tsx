@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { WalletDashboard } from '@/components/wallet/WalletDashboard';
 import { EditProfileModal } from '@/components/profile/EditProfileModal';
+import { SettingsPanel } from '@/components/profile/SettingsPanel';
 import { 
   User, 
   Settings, 
@@ -33,6 +34,7 @@ export default function Profile() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [showWallet, setShowWallet] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -97,17 +99,18 @@ export default function Profile() {
     return <Navigate to="/auth" replace />;
   }
 
-  if (showWallet) {
+  if (showWallet || showSettings) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <main className="container mx-auto px-4 py-6 pb-20">
           <div className="mb-4">
-            <Button variant="ghost" onClick={() => setShowWallet(false)}>
+            <Button variant="ghost" onClick={() => { setShowWallet(false); setShowSettings(false); }}>
               ← Back to Profile
             </Button>
           </div>
-          <WalletDashboard />
+          {showWallet && <WalletDashboard />}
+          {showSettings && <SettingsPanel profile={profile} onProfileUpdated={fetchProfile} />}
         </main>
         <MobileNavigation />
       </div>
@@ -232,7 +235,11 @@ export default function Profile() {
                 <Edit className="h-4 w-4" />
                 Edit Profile
               </Button>
-              <Button variant="outline" className="w-full justify-start gap-2">
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2"
+                onClick={() => setShowSettings(true)}
+              >
                 <Settings className="h-4 w-4" />
                 Settings
               </Button>
