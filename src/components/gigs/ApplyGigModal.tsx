@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { notifyNewApplication } from '@/lib/notifications';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -37,6 +38,7 @@ interface ApplyGigModalProps {
     id: string;
     title: string;
     campaign_type: string;
+    creator_id: string;
     budget_per_influencer?: number;
     cost_per_video?: number;
     requires_physical_product?: boolean;
@@ -112,10 +114,18 @@ export function ApplyGigModal({ open, onOpenChange, campaign, onSuccess }: Apply
         return;
       }
 
-      toast.success('Application submitted! The brand will review your profile.');
-      onSuccess();
-      onOpenChange(false);
-      resetForm();
+      // Notify campaign owner
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('user_id', user.id)
+        .single();
+
+      notifyNewApplication(
+        campaign.creator_id,
+        profile?.full_name || 'An influencer',
+        campaign.title
+      );
 
       toast.success('Application submitted! The brand will review your profile.');
       onSuccess();

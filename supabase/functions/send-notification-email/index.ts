@@ -8,7 +8,7 @@ const corsHeaders = {
 
 interface EmailRequest {
   user_id: string;
-  email_type: 'wallet_funded' | 'wallet_withdrawal' | 'campaign_update' | 'content_approved' | 'content_rejected' | 'application_accepted' | 'application_rejected';
+  email_type: 'wallet_funded' | 'wallet_withdrawal' | 'campaign_update' | 'content_approved' | 'content_rejected' | 'application_accepted' | 'application_rejected' | 'new_application' | 'campaign_completed';
   data: Record<string, any>;
   recipient_email?: string;
 }
@@ -80,6 +80,25 @@ const emailTemplates: Record<string, { subject: string; template: (data: any) =>
       <a href="https://tikora.app/explore" style="display: inline-block; padding: 12px 24px; background: #6366f1; color: white; text-decoration: none; border-radius: 6px;">Find More Campaigns</a>
     `,
   },
+  new_application: {
+    subject: 'New Campaign Application - Tikora',
+    template: (data) => `
+      <h2>New Application Received</h2>
+      <p><strong>${data.influencer_name}</strong> has applied to your campaign <strong>${data.campaign_title}</strong>.</p>
+      <p>Review their application and decide whether to accept or decline.</p>
+      <a href="https://tikora.app/dashboard" style="display: inline-block; padding: 12px 24px; background: #6366f1; color: white; text-decoration: none; border-radius: 6px;">Review Application</a>
+    `,
+  },
+  campaign_completed: {
+    subject: '🎉 Campaign Completed - Tikora',
+    template: (data) => `
+      <h2>Campaign Complete!</h2>
+      <p>Your campaign <strong>${data.campaign_title}</strong> has been completed.</p>
+      <p>Total videos approved: <strong>${data.videos_approved}</strong></p>
+      <p>Total spent: <strong>₦${data.total_spent?.toLocaleString()}</strong></p>
+      <a href="https://tikora.app/dashboard" style="display: inline-block; padding: 12px 24px; background: #22c55e; color: white; text-decoration: none; border-radius: 6px;">View Results</a>
+    `,
+  },
 };
 
 serve(async (req) => {
@@ -126,6 +145,9 @@ serve(async (req) => {
           </style>
         </head>
         <body>
+          <div style="text-align: center; margin-bottom: 24px;">
+            <h1 style="color: #6366f1; font-size: 28px; margin: 0;">Tikora</h1>
+          </div>
           ${template.template(data)}
           <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
           <p style="color: #888; font-size: 12px;">
@@ -135,9 +157,44 @@ serve(async (req) => {
       </html>
     `;
 
-    // For now, log the email (integrate with actual email service like Resend, SendGrid, etc.)
-    // When email service is configured, replace this with actual send logic
-    console.log('Would send email:', { to: email, subject: template.subject, html: htmlContent });
+    let emailStatus = 'logged';
+
+    // Try to send with Resend if API key is configured
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    if (resendApiKey) {
+      try {
+        const response = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'Tikora <noreply@tikora.app>',
+            to: email,
+            subject: template.subject,
+            html: htmlContent,
+          }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          emailStatus = 'sent';
+          console.log('Email sent via Resend:', result.id);
+        } else {
+          emailStatus = 'failed';
+          console.error('Resend error:', result);
+        }
+      } catch (sendError) {
+        emailStatus = 'failed';
+        console.error('Failed to send email via Resend:', sendError);
+      }
+    } else {
+      console.log('No RESEND_API_KEY configured. Email logged but not sent:', {
+        to: email,
+        subject: template.subject,
+      });
+    }
 
     // Log the email notification
     await supabase.from('email_notifications').insert({
@@ -145,32 +202,13 @@ serve(async (req) => {
       email_type,
       recipient_email: email,
       subject: template.subject,
-      status: 'sent', // Change to 'pending' when using actual email service
-      sent_at: new Date().toISOString(),
+      status: emailStatus,
+      sent_at: emailStatus === 'sent' ? new Date().toISOString() : null,
       metadata: data,
     });
 
-    // Note: To actually send emails, you need to configure an email service
-    // Example with Resend:
-    // const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    // if (resendApiKey) {
-    //   const response = await fetch('https://api.resend.com/emails', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Authorization': `Bearer ${resendApiKey}`,
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       from: 'Tikora <noreply@tikora.app>',
-    //       to: email,
-    //       subject: template.subject,
-    //       html: htmlContent,
-    //     }),
-    //   });
-    // }
-
     return new Response(
-      JSON.stringify({ success: true, message: 'Email notification processed' }),
+      JSON.stringify({ success: true, status: emailStatus }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
