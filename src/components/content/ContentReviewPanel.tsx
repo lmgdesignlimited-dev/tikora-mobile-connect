@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { notifyContentReview } from '@/lib/notifications';
 
 interface RejectionReason {
   id: string;
@@ -132,9 +133,23 @@ export function ContentReviewPanel({
 
       if (error) throw error;
 
-      const result = data as { success: boolean; error?: string; action?: string };
+      const result = data as { success: boolean; error?: string; action?: string; earnings_credited?: number; can_resubmit?: boolean; rejection_reason?: string };
       if (result.success) {
         toast.success(`Content ${action}d successfully!`);
+
+        // Find the submission to get influencer_id
+        const submission = submissions.find(s => s.id === submissionId);
+        if (submission) {
+          notifyContentReview(
+            submission.influencer_id,
+            campaignTitle,
+            action === 'approve',
+            result.earnings_credited,
+            result.rejection_reason,
+            result.can_resubmit
+          );
+        }
+
         setReviewingId(null);
         setSelectedReason('');
         setCustomFeedback('');
