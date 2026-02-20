@@ -264,9 +264,25 @@ export default function CommandCampaigns() {
                       </TableCell>
                       <TableCell>{format(new Date(campaign.created_at), 'MMM d, yyyy')}</TableCell>
                       <TableCell className="text-right">
-                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                          <Eye className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center justify-end gap-1">
+                          <Button size="sm" variant="outline" className="h-8 text-xs gap-1"
+                            onClick={async () => {
+                              await supabase.from('campaigns').update({ status: 'active' }).eq('id', campaign.id);
+                              toast.success('Campaign activated'); fetchCampaigns();
+                            }}
+                            disabled={campaign.status === 'active'}
+                          >Activate</Button>
+                          <Button size="sm" variant="outline" className="h-8 text-xs gap-1"
+                            onClick={async () => {
+                              await supabase.from('campaigns').update({ status: 'paused' }).eq('id', campaign.id);
+                              toast.success('Campaign paused'); fetchCampaigns();
+                            }}
+                            disabled={campaign.status === 'paused'}
+                          >Pause</Button>
+                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
