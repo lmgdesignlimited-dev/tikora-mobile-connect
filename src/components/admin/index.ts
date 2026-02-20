@@ -6,3 +6,6 @@ export { AdminActivityLog } from './AdminActivityLog';
 export { PaymentGatewayPanel } from './PaymentGatewayPanel';
 export { CryptoPaymentPanel } from './CryptoPaymentPanel';
 export { RoleManagement } from './RoleManagement';
+export { UserProfileDrawer } from './UserProfileDrawer';
+export { GigApplicationsPanel } from './GigApplicationsPanel';
+

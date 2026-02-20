@@ -268,8 +268,53 @@ export type Database = {
         }
         Relationships: []
       }
+      campaign_ratings: {
+        Row: {
+          campaign_id: string
+          created_at: string | null
+          id: string
+          influencer_id: string
+          rated_by: string
+          rating: number
+          review_text: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string | null
+          id?: string
+          influencer_id: string
+          rated_by: string
+          rating: number
+          review_text?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string | null
+          id?: string
+          influencer_id?: string
+          rated_by?: string
+          rating?: number
+          review_text?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_ratings_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaigns: {
         Row: {
+          admin_approved: boolean | null
+          admin_approved_at: string | null
+          admin_approved_by: string | null
+          admin_rejection_reason: string | null
           app_name: string | null
           app_store_url: string | null
           budget: number
@@ -307,6 +352,7 @@ export type Database = {
           target_audience: string | null
           target_cities: string[] | null
           target_demographics: Json | null
+          thumbnail_url: string | null
           title: string
           trailer_url: string | null
           updated_at: string
@@ -318,6 +364,10 @@ export type Database = {
           website_url: string | null
         }
         Insert: {
+          admin_approved?: boolean | null
+          admin_approved_at?: string | null
+          admin_approved_by?: string | null
+          admin_rejection_reason?: string | null
           app_name?: string | null
           app_store_url?: string | null
           budget: number
@@ -355,6 +405,7 @@ export type Database = {
           target_audience?: string | null
           target_cities?: string[] | null
           target_demographics?: Json | null
+          thumbnail_url?: string | null
           title: string
           trailer_url?: string | null
           updated_at?: string
@@ -366,6 +417,10 @@ export type Database = {
           website_url?: string | null
         }
         Update: {
+          admin_approved?: boolean | null
+          admin_approved_at?: string | null
+          admin_approved_by?: string | null
+          admin_rejection_reason?: string | null
           app_name?: string | null
           app_store_url?: string | null
           budget?: number
@@ -403,6 +458,7 @@ export type Database = {
           target_audience?: string | null
           target_cities?: string[] | null
           target_demographics?: Json | null
+          thumbnail_url?: string | null
           title?: string
           trailer_url?: string | null
           updated_at?: string
@@ -1079,6 +1135,7 @@ export type Database = {
           following_count: number | null
           full_name: string
           id: string
+          influencer_category: string | null
           influencer_tier: string | null
           is_active: boolean | null
           is_boosted: boolean | null
@@ -1124,6 +1181,7 @@ export type Database = {
           following_count?: number | null
           full_name: string
           id?: string
+          influencer_category?: string | null
           influencer_tier?: string | null
           is_active?: boolean | null
           is_boosted?: boolean | null
@@ -1169,6 +1227,7 @@ export type Database = {
           following_count?: number | null
           full_name?: string
           id?: string
+          influencer_category?: string | null
           influencer_tier?: string | null
           is_active?: boolean | null
           is_boosted?: boolean | null
@@ -1359,6 +1418,27 @@ export type Database = {
           metric_type?: string
           metric_value?: number
           recorded_at?: string | null
+        }
+        Relationships: []
+      }
+      user_follows: {
+        Row: {
+          created_at: string | null
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          follower_id?: string
+          following_id?: string
+          id?: string
         }
         Relationships: []
       }
