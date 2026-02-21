@@ -29,6 +29,7 @@ import { BoostStats } from '@/components/coins/BoostStats';
 import { VideoSubmissionCard } from '@/components/content/VideoSubmissionCard';
 import { SubmitContentModal } from '@/components/content/SubmitContentModal';
 import { GigDiscoveryFeed } from '@/components/gigs/GigDiscoveryFeed';
+import { ReferralCard } from '@/components/dashboard/ReferralCard';
 
 const getTierFromFollowers = (count: number): string => {
   if (count >= 100000) return 'super';
@@ -179,6 +180,9 @@ export function InfluencerDashboard() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Referral Card */}
+      <ReferralCard />
 
       {/* Coin Wallet */}
       <CoinWallet />

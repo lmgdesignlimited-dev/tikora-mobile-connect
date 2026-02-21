@@ -23,9 +23,12 @@ import {
   ChevronDown,
   Megaphone,
   BarChart3,
-  Video
+  Video,
+  UserPlus
 } from 'lucide-react';
 import { CampaignWizard } from '@/components/campaigns/CampaignWizard';
+import { ReferralCard } from '@/components/dashboard/ReferralCard';
+import { ApplicationApprovalPanel } from '@/components/dashboard/ApplicationApprovalPanel';
 import { toast } from 'sonner';
 
 export function ArtistDashboard() {
@@ -188,8 +191,9 @@ export function ArtistDashboard() {
 
       {/* === PRIMARY: Campaign Tabs === */}
       <Tabs defaultValue="campaigns">
-        <TabsList>
+        <TabsList className="flex flex-wrap h-auto gap-1">
           <TabsTrigger value="campaigns" className="gap-2"><BarChart3 className="h-4 w-4" />My Campaigns</TabsTrigger>
+          <TabsTrigger value="applications" className="gap-2"><UserPlus className="h-4 w-4" />Applications</TabsTrigger>
           <TabsTrigger value="submissions" className="gap-2"><Video className="h-4 w-4" />Submissions</TabsTrigger>
         </TabsList>
 
@@ -221,6 +225,26 @@ export function ArtistDashboard() {
                         <div><span className="text-muted-foreground">Approved:</span><div className="font-medium text-success">{campaign.videos_approved}</div></div>
                         <div><span className="text-muted-foreground">Cost/Video:</span><div className="font-medium">₦{campaign.cost_per_video?.toLocaleString()}</div></div>
                       </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="applications" className="mt-4">
+          <Card>
+            <CardHeader><CardTitle>Manage Applications</CardTitle></CardHeader>
+            <CardContent>
+              {campaigns.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">Create a campaign first to see applications</p>
+              ) : (
+                <div className="space-y-6">
+                  {campaigns.filter(c => c.status === 'active').map((campaign: any) => (
+                    <div key={campaign.id}>
+                      <h4 className="font-medium text-sm mb-2">{campaign.title}</h4>
+                      <ApplicationApprovalPanel campaignId={campaign.id} campaignTitle={campaign.title} onUpdate={fetchCampaigns} />
                     </div>
                   ))}
                 </div>
@@ -341,6 +365,9 @@ export function ArtistDashboard() {
           </div>
         </CollapsibleContent>
       </Collapsible>
+
+      {/* Referral Card */}
+      <ReferralCard />
 
       <CampaignWizard open={showCreateModal} onOpenChange={setShowCreateModal} userType="artist" onSuccess={fetchCampaigns} />
     </div>
