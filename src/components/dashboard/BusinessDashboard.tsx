@@ -33,6 +33,8 @@ import {
 import { CampaignWizard } from '@/components/campaigns/CampaignWizard';
 import { InfluencerSelection } from '@/components/business/InfluencerSelection';
 import { ContentReviewPanel } from '@/components/content/ContentReviewPanel';
+import { ReferralCard } from '@/components/dashboard/ReferralCard';
+import { ApplicationApprovalPanel } from '@/components/dashboard/ApplicationApprovalPanel';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 
@@ -272,10 +274,14 @@ export function BusinessDashboard() {
 
       {/* Tabs for Campaigns and Influencers */}
       <Tabs defaultValue="campaigns">
-        <TabsList>
+        <TabsList className="flex flex-wrap h-auto gap-1">
           <TabsTrigger value="campaigns" className="gap-2">
             <Package className="h-4 w-4" />
             Campaigns
+          </TabsTrigger>
+          <TabsTrigger value="applications" className="gap-2">
+            <UserPlus className="h-4 w-4" />
+            Applications
           </TabsTrigger>
           <TabsTrigger value="influencers" className="gap-2">
             <UserPlus className="h-4 w-4" />
@@ -366,10 +372,33 @@ export function BusinessDashboard() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="applications" className="mt-4">
+          <Card>
+            <CardHeader><CardTitle>Manage Gig Applications</CardTitle></CardHeader>
+            <CardContent>
+              {campaigns.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">Create a campaign first</p>
+              ) : (
+                <div className="space-y-6">
+                  {campaigns.filter((c: any) => c.status === 'active').map((campaign: any) => (
+                    <div key={campaign.id}>
+                      <h4 className="font-medium text-sm mb-2">{campaign.title}</h4>
+                      <ApplicationApprovalPanel campaignId={campaign.id} campaignTitle={campaign.title} onUpdate={fetchCampaigns} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="influencers" className="mt-4">
           <InfluencerSelection />
         </TabsContent>
       </Tabs>
+
+      {/* Referral Card */}
+      <ReferralCard />
 
       <CampaignWizard
         open={showCreateModal}
