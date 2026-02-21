@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Phone, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,9 +29,11 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export function SignUpForm() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [referralCode, setReferralCode] = useState(searchParams.get('ref') || '');
   const { signUp } = useAuth();
 
   const {
@@ -56,8 +58,36 @@ export function SignUpForm() {
 
       // If email confirmation is enabled, session may be null.
       if (!signUpData?.session) {
+        // Store referral code for processing after email confirmation
+        if (referralCode) {
+          localStorage.setItem('tikora_referral_code', referralCode);
+        }
         toast.success('Account created. Please check your email to confirm your account, then sign in.');
         return;
+      }
+
+      // Process referral if code provided
+      if (referralCode && signUpData?.user) {
+        try {
+          const { supabase } = await import('@/integrations/supabase/client');
+          // Look up referrer by code
+          const { data: referrer } = await supabase
+            .from('profiles')
+            .select('user_id')
+            .eq('referral_code', referralCode.toUpperCase())
+            .single();
+          
+          if (referrer) {
+            await supabase.from('referrals').insert({
+              referrer_id: referrer.user_id,
+              referred_id: signUpData.user.id,
+              referral_code: referralCode.toUpperCase(),
+            });
+            await supabase.from('profiles').update({ referred_by: referrer.user_id }).eq('user_id', signUpData.user.id);
+          }
+        } catch (e) {
+          console.error('Referral processing error:', e);
+        }
       }
 
       toast.success('Account created successfully! Welcome to Tikora!');
@@ -208,6 +238,23 @@ export function SignUpForm() {
           {errors.confirmPassword && (
             <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
           )}
+        </div>
+
+        {/* Referral Code */}
+        <div className="space-y-2">
+          <Label htmlFor="referral_code">Referral Code (Optional)</Label>
+          <div className="relative">
+            <Gift className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="referral_code"
+              type="text"
+              placeholder="e.g. TIK-AB12CD34"
+              className="pl-10"
+              value={referralCode}
+              onChange={(e) => setReferralCode(e.target.value)}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">Both you and your referrer earn 5% on your first order!</p>
         </div>
 
         <Button
