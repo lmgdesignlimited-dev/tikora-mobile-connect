@@ -15,16 +15,35 @@ import {
   ArrowRight,
   Smartphone,
   Globe,
-  DollarSign
+  DollarSign,
+  Gift,
+  Copy
 } from 'lucide-react';
 import heroImage from '@/assets/tikora-hero-image.jpg';
 import tikoraLogo from '@/assets/tikora-logo.png';
 import tikoraIcon from '@/assets/tikora-icon.png';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const Index = () => {
   const { user, loading } = useAuth();
+  const [referralCode, setReferralCode] = useState<string | null>(null);
 
-  // Show loading while checking auth state
+  useEffect(() => {
+    if (user) {
+      supabase.from('profiles').select('referral_code').eq('user_id', user.id).single()
+        .then(({ data }) => { if (data?.referral_code) setReferralCode(data.referral_code); });
+    }
+  }, [user]);
+
+  const copyReferralLink = () => {
+    if (referralCode) {
+      navigator.clipboard.writeText(`${window.location.origin}/auth?ref=${referralCode}`);
+      toast.success('Referral link copied!');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -32,9 +51,6 @@ const Index = () => {
       </div>
     );
   }
-
-  // Keep landing page accessible even when logged in.
-  // We show a "Go to Dashboard" CTA instead of forcing an automatic redirect.
 
   const features = [
     {
@@ -69,8 +85,8 @@ const Index = () => {
     'Secure payments with Kora Pay & Flutterwave',
     'Real-time analytics and insights',
     'Mobile-first experience',
-    'Push notifications for updates',
-    'Professional networking tools',
+    '5% referral commission on first orders',
+    'Professional networking & follow system',
   ];
 
   return (
@@ -114,7 +130,7 @@ const Index = () => {
             <div className="space-y-8">
               <div className="space-y-4">
                 <Badge className="bg-primary/10 text-primary border-primary/20">
-                  Now Available on Mobile 📱
+                  🎁 Earn 5% Referral Commission
                 </Badge>
                 <h1 className="text-4xl md:text-6xl font-bold leading-tight">
                   The Ultimate <span className="text-gradient-primary">Influencer</span> & Creator Marketplace
@@ -164,11 +180,11 @@ const Index = () => {
                   src={heroImage} 
                   alt="Tikora creators and influencers" 
                   className="w-full h-auto"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
               </div>
               
-              {/* Floating Cards */}
               <Card className="absolute -bottom-6 -left-6 bg-background/95 backdrop-blur-sm border-primary/20 shadow-glow">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
@@ -200,6 +216,34 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Referral Banner (logged-in users) */}
+      {user && referralCode && (
+        <section className="py-6 bg-gradient-to-r from-primary/10 to-accent/10 border-b">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Gift className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm">Refer & Earn 5% Commission</p>
+                  <p className="text-xs text-muted-foreground">Share your code and earn on every first order</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <code className="px-3 py-1.5 bg-muted rounded-md text-sm font-mono font-semibold">
+                  {referralCode}
+                </code>
+                <Button variant="outline" size="sm" onClick={copyReferralLink} className="gap-2">
+                  <Copy className="h-3.5 w-3.5" />
+                  Copy Link
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Stats Section */}
       <section className="py-16 border-b">
@@ -256,8 +300,47 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Referral Program Section */}
+      <section className="py-20 bg-gradient-to-br from-primary/5 to-accent/10">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center">
+            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
+              <Gift className="h-3 w-3 mr-1" /> Referral Program
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Earn <span className="text-gradient-primary">5% Commission</span> on Every Referral
+            </h2>
+            <p className="text-lg text-muted-foreground mb-8">
+              Share your unique referral code with friends. When they sign up and complete their first campaign or order, you automatically earn 5% as a wallet bonus.
+            </p>
+            <div className="grid sm:grid-cols-3 gap-6 mb-8">
+              {[
+                { step: '1', title: 'Share Your Code', desc: 'Copy your unique referral link from your dashboard' },
+                { step: '2', title: 'Friend Signs Up', desc: 'They create an account using your referral code' },
+                { step: '3', title: 'Earn 5%', desc: 'Get credited automatically on their first order' },
+              ].map((item) => (
+                <Card key={item.step} className="border-0 shadow-medium">
+                  <CardContent className="pt-6 text-center">
+                    <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-3 font-bold">
+                      {item.step}
+                    </div>
+                    <h3 className="font-semibold mb-1">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground">{item.desc}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <Button variant="hero" size="xl" asChild>
+              <Link to="/auth">
+                Start Earning Now <ArrowRight className="h-5 w-5 ml-2" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Benefits Section */}
-      <section className="py-20 bg-gradient-to-br from-accent/5 to-primary/5">
+      <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -369,7 +452,7 @@ const Index = () => {
           </div>
           
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 Tikora. All rights reserved. Built with ❤️ for African creators.</p>
+            <p>&copy; 2025 Tikora. All rights reserved. Built with ❤️ for African creators.</p>
           </div>
         </div>
       </footer>

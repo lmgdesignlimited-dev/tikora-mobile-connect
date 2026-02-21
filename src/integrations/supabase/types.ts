@@ -1144,6 +1144,8 @@ export type Database = {
           platforms: string[] | null
           preferred_currency: string | null
           rating: number | null
+          referral_code: string | null
+          referred_by: string | null
           social_links: Json | null
           strike_count: number | null
           tiktok_claim_fee: number | null
@@ -1190,6 +1192,8 @@ export type Database = {
           platforms?: string[] | null
           preferred_currency?: string | null
           rating?: number | null
+          referral_code?: string | null
+          referred_by?: string | null
           social_links?: Json | null
           strike_count?: number | null
           tiktok_claim_fee?: number | null
@@ -1236,6 +1240,8 @@ export type Database = {
           platforms?: string[] | null
           preferred_currency?: string | null
           rating?: number | null
+          referral_code?: string | null
+          referred_by?: string | null
           social_links?: Json | null
           strike_count?: number | null
           tiktok_claim_fee?: number | null
@@ -1248,6 +1254,42 @@ export type Database = {
           username?: string | null
           verification_status?: string | null
           wallet_balance?: number | null
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          commission_amount: number | null
+          commission_paid: boolean | null
+          created_at: string
+          first_order_id: string | null
+          id: string
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+          updated_at: string
+        }
+        Insert: {
+          commission_amount?: number | null
+          commission_paid?: boolean | null
+          created_at?: string
+          first_order_id?: string | null
+          id?: string
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+          updated_at?: string
+        }
+        Update: {
+          commission_amount?: number | null
+          commission_paid?: boolean | null
+          created_at?: string
+          first_order_id?: string | null
+          id?: string
+          referral_code?: string
+          referred_id?: string
+          referrer_id?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1904,6 +1946,14 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      process_referral_commission: {
+        Args: {
+          p_order_amount: number
+          p_order_id?: string
+          p_referred_id: string
+        }
+        Returns: Json
       }
       process_service_order: {
         Args: {
