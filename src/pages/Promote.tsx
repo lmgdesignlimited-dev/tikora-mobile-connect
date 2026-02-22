@@ -25,7 +25,8 @@ import {
   XCircle,
   Loader2,
   Link as LinkIcon,
-  Upload
+  Upload,
+  ArrowRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -247,8 +248,12 @@ export default function Promote() {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="create">
-          <TabsList className="mb-6">
+        <Tabs defaultValue="choose-method">
+          <TabsList className="mb-6 flex flex-wrap h-auto gap-1">
+            <TabsTrigger value="choose-method" className="gap-2">
+              <Video className="h-4 w-4" />
+              Promotion Method
+            </TabsTrigger>
             <TabsTrigger value="create" className="gap-2">
               <Upload className="h-4 w-4" />
               Create Promotion
@@ -258,6 +263,115 @@ export default function Promote() {
               My Promotions
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="choose-method">
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Option 1: Platform Boost */}
+              <Card className="border-primary/20 hover:shadow-lg transition-all cursor-pointer group" onClick={() => {
+                const tabTrigger = document.querySelector('[data-state][value="create"]') as HTMLElement;
+                tabTrigger?.click();
+              }}>
+                <CardHeader>
+                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-3">
+                    <Play className="h-7 w-7 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl">Boost on Tikora</CardTitle>
+                  <CardDescription className="text-base">
+                    Upload or paste your video link and we promote it across our platform network. No account linking needed.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>No social account access required</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>Promotion runs on Tikora's ad network</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>Track views, clicks & engagement</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>Starting from ₦1,000</span>
+                    </div>
+                  </div>
+                  <Button variant="gradient" className="w-full mt-4 gap-2 group-hover:gap-3 transition-all">
+                    Get Started <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Option 2: Social Account Linking */}
+              <Card className="border-violet-500/20 hover:shadow-lg transition-all">
+                <CardHeader>
+                  <div className="w-14 h-14 rounded-2xl bg-violet-500/10 flex items-center justify-center mb-3">
+                    <LinkIcon className="h-7 w-7 text-violet-500" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-xl">Boost on Your Account</CardTitle>
+                    <Badge variant="secondary" className="text-xs">Advanced</Badge>
+                  </div>
+                  <CardDescription className="text-base">
+                    Link your TikTok, Instagram, or Facebook account and we run professional ad campaigns directly on your social profile.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>Ads run directly on your social account</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>Secure OAuth account linking</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>Professional campaign management</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>Detailed analytics & reporting</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 p-4 rounded-xl bg-muted/50 border border-dashed">
+                    <h4 className="font-medium text-sm mb-3">Link Your Account</h4>
+                    <div className="space-y-2">
+                      <Button variant="outline" className="w-full justify-start gap-3" disabled>
+                        <div className="w-6 h-6 rounded bg-black flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">T</span>
+                        </div>
+                        Connect TikTok
+                        <Badge variant="secondary" className="ml-auto text-xs">Coming Soon</Badge>
+                      </Button>
+                      <Button variant="outline" className="w-full justify-start gap-3" disabled>
+                        <div className="w-6 h-6 rounded bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">I</span>
+                        </div>
+                        Connect Instagram
+                        <Badge variant="secondary" className="ml-auto text-xs">Coming Soon</Badge>
+                      </Button>
+                      <Button variant="outline" className="w-full justify-start gap-3" disabled>
+                        <div className="w-6 h-6 rounded bg-blue-600 flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">F</span>
+                        </div>
+                        Connect Facebook
+                        <Badge variant="secondary" className="ml-auto text-xs">Coming Soon</Badge>
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-3">
+                      Account linking uses secure OAuth. We never store your password. You can revoke access anytime.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
           <TabsContent value="create">
             <div className="grid md:grid-cols-2 gap-6">
