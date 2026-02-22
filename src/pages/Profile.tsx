@@ -24,8 +24,10 @@ import {
   CheckCircle,
   Edit,
   Wallet,
-  ExternalLink
+  ExternalLink,
+  HelpCircle
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 export default function Profile() {
@@ -242,6 +244,16 @@ export default function Profile() {
               >
                 <Settings className="h-4 w-4" />
                 Settings
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start gap-2"
+                asChild
+              >
+                <Link to="/help-center">
+                  <HelpCircle className="h-4 w-4" />
+                  Help Center & Support
+                </Link>
               </Button>
             </CardContent>
           </Card>
