@@ -51,6 +51,7 @@ export function BusinessDashboard() {
   });
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [reviewingCampaign, setReviewingCampaign] = useState<any>(null);
+  const [selectedInfluencers, setSelectedInfluencers] = useState<string[]>([]);
   useEffect(() => {
     if (user) {
       loadDashboardData();
@@ -200,6 +201,24 @@ export function BusinessDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Wallet Balance - Mobile Visible */}
+      <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+        <CardContent className="py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <DollarSign className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-sm text-muted-foreground">Wallet Balance</p>
+                <p className="text-xl font-bold">₦{(profile?.wallet_balance || 0).toLocaleString()}</p>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/wallet">Top Up</Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Welcome Section */}
       <div className="flex items-center justify-between">
         <div>
@@ -393,7 +412,25 @@ export function BusinessDashboard() {
         </TabsContent>
 
         <TabsContent value="influencers" className="mt-4">
-          <InfluencerSelection />
+          <InfluencerSelection 
+            selectedInfluencers={selectedInfluencers}
+            onSelect={(id) => {
+              setSelectedInfluencers(prev => 
+                prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+              );
+            }}
+          />
+          {selectedInfluencers.length > 0 && (
+            <div className="mt-4 p-4 border rounded-lg bg-primary/5 border-primary/20">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium">{selectedInfluencers.length} influencer(s) selected</p>
+                <Button variant="gradient" className="gap-2" onClick={() => setShowCreateModal(true)}>
+                  <Plus className="h-4 w-4" />
+                  Create Campaign with Selected
+                </Button>
+              </div>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 

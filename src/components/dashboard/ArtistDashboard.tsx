@@ -154,6 +154,24 @@ export function ArtistDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Wallet Balance - Mobile Visible */}
+      <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+        <CardContent className="py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <DollarSign className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-sm text-muted-foreground">Wallet Balance</p>
+                <p className="text-xl font-bold">₦{(profile?.wallet_balance || 0).toLocaleString()}</p>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" asChild>
+              <a href="/wallet">Top Up</a>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* === HERO: Campaign-First Header === */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

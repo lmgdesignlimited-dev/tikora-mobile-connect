@@ -84,6 +84,10 @@ export default function Services() {
   const [orderModalOpen, setOrderModalOpen] = useState(false);
   const [submissionData, setSubmissionData] = useState<Record<string, string>>({});
 
+  // Read tab from URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  const defaultTab = urlParams.get('tab') === 'business' ? 'business' : 'artist';
+
   useEffect(() => {
     if (user?.id) {
       loadData();
@@ -323,7 +327,7 @@ export default function Services() {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="artist">
+        <Tabs defaultValue={defaultTab}>
           <TabsList className="mb-6">
             <TabsTrigger value="artist" className="gap-2">
               <Music className="h-4 w-4" />
@@ -566,23 +570,38 @@ export default function Services() {
                 ))}
               </div>
 
-              <Button 
-                onClick={handleOrderService}
-                disabled={orderLoading || selectedPackage.price > (profile?.wallet_balance || 0)}
-                className="w-full"
-                variant="gradient"
-              >
-                {orderLoading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : selectedPackage.price > (profile?.wallet_balance || 0) ? (
-                  'Insufficient Balance'
-                ) : (
-                  `Pay ₦${selectedPackage.price.toLocaleString()}`
-                )}
-              </Button>
+              {selectedPackage.price > (profile?.wallet_balance || 0) ? (
+                <div className="space-y-3">
+                  <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-center">
+                    <p className="text-sm font-medium text-destructive">Insufficient Balance</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      You need ₦{(selectedPackage.price - (profile?.wallet_balance || 0)).toLocaleString()} more to place this order.
+                    </p>
+                  </div>
+                  <Button variant="gradient" className="w-full gap-2" asChild>
+                    <a href="/wallet">
+                      <Wallet className="h-4 w-4" />
+                      Top Up Wallet
+                    </a>
+                  </Button>
+                </div>
+              ) : (
+                <Button 
+                  onClick={handleOrderService}
+                  disabled={orderLoading}
+                  className="w-full"
+                  variant="gradient"
+                >
+                  {orderLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    `Pay ₦${selectedPackage.price.toLocaleString()}`
+                  )}
+                </Button>
+              )}
             </div>
           )}
         </DialogContent>
