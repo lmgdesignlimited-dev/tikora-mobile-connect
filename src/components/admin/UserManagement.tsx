@@ -37,6 +37,8 @@ export function UserManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [userTypeFilter, setUserTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -60,7 +62,6 @@ export function UserManagement() {
 
       if (error) throw error;
       
-      // Filter by search term client-side
       let filtered = data || [];
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
@@ -116,6 +117,11 @@ export function UserManagement() {
       console.error('Error verifying user:', error);
       toast.error('Failed to verify user');
     }
+  };
+
+  const handleViewProfile = (userId: string) => {
+    setSelectedUserId(userId);
+    setDrawerOpen(true);
   };
 
   const getStatusBadge = (status: string) => {
@@ -281,6 +287,16 @@ export function UserManagement() {
                       </div>
                     </div>
 
+                    {/* View Profile Button - always visible */}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleViewProfile(user.user_id)}
+                      title="View Profile"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+
                     {isAdmin && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -289,6 +305,10 @@ export function UserManagement() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleViewProfile(user.user_id)}>
+                            <Eye className="h-4 w-4 mr-2" />
+                            View Full Profile
+                          </DropdownMenuItem>
                           {user.verification_status !== 'verified' && (
                             <DropdownMenuItem onClick={() => handleVerifyUser(user.user_id)}>
                               <CheckCircle className="h-4 w-4 mr-2" />
@@ -323,6 +343,14 @@ export function UserManagement() {
           </div>
         </div>
       )}
+
+      {/* User Profile Drawer */}
+      <UserProfileDrawer
+        userId={selectedUserId}
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        onUpdate={fetchUsers}
+      />
     </div>
   );
 }

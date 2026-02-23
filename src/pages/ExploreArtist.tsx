@@ -14,23 +14,9 @@ import {
   Newspaper,
   Sparkles,
   ArrowRight,
-  Star,
-  CheckCircle,
   Clock,
   Music
 } from 'lucide-react';
-
-interface ServicePackage {
-  id: string;
-  service_type: string;
-  name: string;
-  description: string | null;
-  price: number;
-  currency: string;
-  features: string[] | null;
-  category: string;
-  delivery_days: number | null;
-}
 
 const artistServices = [
   {
@@ -41,7 +27,7 @@ const artistServices = [
     color: 'text-amber-500',
     bgColor: 'bg-amber-500/10',
     borderColor: 'border-amber-500/20',
-    route: '/services',
+    route: '/services?tab=artist',
     tag: 'Most Popular'
   },
   {
@@ -52,7 +38,7 @@ const artistServices = [
     color: 'text-orange-500',
     bgColor: 'bg-orange-500/10',
     borderColor: 'border-orange-500/20',
-    route: '/services',
+    route: '/services?tab=artist',
     tag: 'Earn More'
   },
   {
@@ -63,7 +49,7 @@ const artistServices = [
     color: 'text-blue-500',
     bgColor: 'bg-blue-500/10',
     borderColor: 'border-blue-500/20',
-    route: '/services',
+    route: '/services?tab=artist',
     tag: 'Creative'
   },
   {
@@ -74,7 +60,7 @@ const artistServices = [
     color: 'text-emerald-500',
     bgColor: 'bg-emerald-500/10',
     borderColor: 'border-emerald-500/20',
-    route: '/services',
+    route: '/services?tab=artist',
     tag: 'PR & Press'
   },
   {
@@ -93,23 +79,14 @@ const artistServices = [
 export default function ExploreArtist() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const [packages, setPackages] = useState<ServicePackage[]>([]);
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
 
   useEffect(() => {
     if (user) {
-      fetchData();
+      supabase.from('service_orders').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(5)
+        .then(({ data }) => { if (data) setRecentOrders(data); });
     }
   }, [user?.id]);
-
-  const fetchData = async () => {
-    const [pkgRes, orderRes] = await Promise.all([
-      supabase.from('service_packages').select('*').eq('category', 'artist').eq('is_active', true).order('price'),
-      supabase.from('service_orders').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }).limit(5)
-    ]);
-    if (pkgRes.data) setPackages(pkgRes.data as ServicePackage[]);
-    if (orderRes.data) setRecentOrders(orderRes.data);
-  };
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
@@ -121,7 +98,6 @@ export default function ExploreArtist() {
       <Header />
       <main className="container mx-auto px-4 py-6 pb-20">
         <div className="space-y-6">
-          {/* Hero */}
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600/20 via-primary/10 to-amber-500/10 border border-primary/20 p-6">
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-2">
@@ -135,7 +111,6 @@ export default function ExploreArtist() {
             <div className="absolute right-0 top-0 w-32 h-32 bg-primary/5 rounded-full -mr-8 -mt-8" />
           </div>
 
-          {/* Services Grid */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {artistServices.map((service) => {
               const Icon = service.icon;
@@ -165,7 +140,6 @@ export default function ExploreArtist() {
             })}
           </div>
 
-          {/* Recent Orders */}
           {recentOrders.length > 0 && (
             <Card>
               <CardHeader>
