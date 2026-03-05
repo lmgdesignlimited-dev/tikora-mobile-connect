@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminRole } from '@/hooks/useAdminRole';
 import { Button } from '@/components/ui/button';
@@ -122,11 +122,42 @@ const navItems: NavItem[] = [
 ];
 
 export function AdminLayout({ children }: AdminLayoutProps) {
-  const { user, signOut } = useAuth();
-  const { roles, isAdmin, isSuperAdmin, hasAnyAdminRole } = useAdminRole();
+  const { user, signOut, loading: authLoading } = useAuth();
+  const { roles, isAdmin, isSuperAdmin, hasAnyAdminRole, loading: roleLoading } = useAdminRole();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  if (authLoading || roleLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
+      </div>
+    );
+  }
+
+  if (!user) return <Navigate to="/auth" replace />;
+
+  if (!hasAnyAdminRole) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="max-w-md w-full">
+          <CardHeader className="text-center">
+            <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
+              <Crown className="h-8 w-8 text-destructive" />
+            </div>
+            <CardTitle>Access Denied</CardTitle>
+            <CardDescription>You don't have permission to access the admin area. Contact your administrator.</CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Button variant="outline" asChild className="w-full">
+              <Link to="/dashboard">Return to Dashboard</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const handleSignOut = async () => {
     await signOut();

@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Header } from '@/components/layout/Header';
-import { MobileNavigation } from '@/components/layout/MobileNavigation';
+import { UserLayout } from '@/components/layout/UserLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -216,10 +215,8 @@ export default function Promote() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      
-      <main className="container mx-auto px-4 py-6 pb-20">
+    <UserLayout>
+      <div className="space-y-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Video className="h-6 w-6 text-primary" />
@@ -624,9 +621,7 @@ export default function Promote() {
             </Card>
           </TabsContent>
         </Tabs>
-      </main>
-
-      <MobileNavigation />
-    </div>
+      </div>
+    </UserLayout>
   );
 }

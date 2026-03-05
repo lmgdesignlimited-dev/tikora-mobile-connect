@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminRole } from '@/hooks/useAdminRole';
+import { AdminGuard } from '@/components/layout/AdminGuard';
 import { AdminLayout } from '@/components/admin/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import {
   Users,
   Video,
@@ -50,26 +50,9 @@ const mockChartData = [
 
 export default function CommandDashboard() {
   const { user, loading: authLoading } = useAuth();
-  const { hasAnyAdminRole, loading: roleLoading, bootstrapAdmin, isSuperAdmin } = useAdminRole();
+  const { hasAnyAdminRole, loading: roleLoading, isSuperAdmin } = useAdminRole();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isBootstrapping, setIsBootstrapping] = useState(false);
-  const [bootstrapAttempted, setBootstrapAttempted] = useState(false);
-
-  useEffect(() => {
-    const tryBootstrap = async () => {
-      if (!roleLoading && !hasAnyAdminRole && user && !bootstrapAttempted) {
-        setBootstrapAttempted(true);
-        setIsBootstrapping(true);
-        const success = await bootstrapAdmin();
-        setIsBootstrapping(false);
-        if (success) {
-          toast.success('You are now the first admin!');
-        }
-      }
-    };
-    tryBootstrap();
-  }, [roleLoading, hasAnyAdminRole, user, bootstrapAttempted, bootstrapAdmin]);
 
   useEffect(() => {
     if (hasAnyAdminRole) {
@@ -91,60 +74,19 @@ export default function CommandDashboard() {
     }
   };
 
-  if (authLoading || roleLoading || isBootstrapping) {
+  if (authLoading || roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">
-            {isBootstrapping ? 'Setting up admin access...' : 'Loading Command Center...'}
-          </p>
+          <p className="text-muted-foreground">Loading Command Center...</p>
         </div>
       </div>
     );
   }
 
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  if (!hasAnyAdminRole) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="max-w-md w-full">
-          <CardHeader className="text-center">
-            <div className="w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
-              <Shield className="h-10 w-10 text-destructive" />
-            </div>
-            <CardTitle className="text-2xl">Access Denied</CardTitle>
-            <CardDescription>
-              You don't have permission to access the Command Center.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center space-y-3">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={async () => {
-                setIsBootstrapping(true);
-                const success = await bootstrapAdmin();
-                setIsBootstrapping(false);
-                if (success) toast.success('Admin access granted (first admin)');
-                else toast.error('Bootstrap failed: an admin already exists or access is restricted.');
-              }}
-            >
-              Try First-Admin Bootstrap
-            </Button>
-            <Button asChild variant="outline" className="w-full">
-              <a href="/dashboard">Return to Dashboard</a>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
+    <AdminGuard>
     <AdminLayout>
       {/* Page Header */}
       <div className="flex flex-col gap-4 mb-8">
@@ -383,5 +325,6 @@ export default function CommandDashboard() {
         </Card>
       </div>
     </AdminLayout>
+    </AdminGuard>
   );
 }
