@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Header } from '@/components/layout/Header';
-import { MobileNavigation } from '@/components/layout/MobileNavigation';
+import { UserLayout } from '@/components/layout/UserLayout';
 import { FundWalletModal, WithdrawModal } from '@/components/wallet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -157,10 +156,8 @@ export default function Wallet() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      
-      <main className="container mx-auto px-4 py-6 pb-20 space-y-6">
+    <UserLayout>
+      <div className="space-y-6">
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -314,11 +311,8 @@ export default function Wallet() {
             )}
           </CardContent>
         </Card>
-      </main>
+      </div>
 
-      <MobileNavigation />
-
-      {/* Modals */}
       <FundWalletModal
         open={fundModalOpen}
         onOpenChange={setFundModalOpen}
@@ -335,6 +329,6 @@ export default function Wallet() {
           bank_account_name: profile?.bank_account_name,
         }}
       />
-    </div>
+    </UserLayout>
   );
 }
