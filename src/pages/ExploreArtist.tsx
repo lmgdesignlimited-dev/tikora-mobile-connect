@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { Header } from '@/components/layout/Header';
-import { MobileNavigation } from '@/components/layout/MobileNavigation';
+import { UserLayout } from '@/components/layout/UserLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -94,87 +93,83 @@ export default function ExploreArtist() {
   if (!user) return <Navigate to="/auth" replace />;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container mx-auto px-4 py-6 pb-20">
-        <div className="space-y-6">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600/20 via-primary/10 to-amber-500/10 border border-primary/20 p-6">
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-2">
-                <Music className="h-6 w-6 text-primary" />
-                <h1 className="text-2xl font-bold">Artist Services</h1>
-              </div>
-              <p className="text-muted-foreground max-w-lg">
-                Grow your music career with professional services — from TikTok verification to blog features and video promotion.
-              </p>
+    <UserLayout>
+      <div className="space-y-6">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600/20 via-primary/10 to-amber-500/10 border border-primary/20 p-6">
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-2">
+              <Music className="h-6 w-6 text-primary" />
+              <h1 className="text-2xl font-bold">Artist Services</h1>
             </div>
-            <div className="absolute right-0 top-0 w-32 h-32 bg-primary/5 rounded-full -mr-8 -mt-8" />
+            <p className="text-muted-foreground max-w-lg">
+              Grow your music career with professional services — from TikTok verification to blog features and video promotion.
+            </p>
           </div>
-
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {artistServices.map((service) => {
-              const Icon = service.icon;
-              return (
-                <Card 
-                  key={service.id} 
-                  className={`group cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${service.borderColor}`}
-                  onClick={() => navigate(service.route)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className={`w-12 h-12 rounded-xl ${service.bgColor} flex items-center justify-center ${service.color}`}>
-                        <Icon className="h-6 w-6" />
-                      </div>
-                      <Badge variant="secondary" className="text-xs">{service.tag}</Badge>
-                    </div>
-                    <CardTitle className="text-lg">{service.title}</CardTitle>
-                    <CardDescription className="text-sm">{service.description}</CardDescription>
-                  </CardHeader>
-                  <CardFooter className="pt-0">
-                    <Button variant="ghost" className="gap-2 p-0 h-auto text-primary group-hover:gap-3 transition-all">
-                      Get Started <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </CardFooter>
-                </Card>
-              );
-            })}
-          </div>
-
-          {recentOrders.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  Recent Service Orders
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {recentOrders.map((order) => (
-                    <div key={order.id} className="flex items-center justify-between p-3 rounded-lg border">
-                      <div>
-                        <p className="font-medium text-sm capitalize">{order.service_type?.replace(/_/g, ' ')}</p>
-                        <p className="text-xs text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium">₦{order.price_paid?.toLocaleString()}</span>
-                        <Badge variant="secondary" className={
-                          order.status === 'completed' ? 'bg-success/10 text-success' :
-                          order.status === 'processing' ? 'bg-primary/10 text-primary' :
-                          'bg-warning/10 text-warning'
-                        }>
-                          {order.status}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          <div className="absolute right-0 top-0 w-32 h-32 bg-primary/5 rounded-full -mr-8 -mt-8" />
         </div>
-      </main>
-      <MobileNavigation />
-    </div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {artistServices.map((service) => {
+            const Icon = service.icon;
+            return (
+              <Card 
+                key={service.id} 
+                className={`group cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${service.borderColor}`}
+                onClick={() => navigate(service.route)}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className={`w-12 h-12 rounded-xl ${service.bgColor} flex items-center justify-center ${service.color}`}>
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <Badge variant="secondary" className="text-xs">{service.tag}</Badge>
+                  </div>
+                  <CardTitle className="text-lg">{service.title}</CardTitle>
+                  <CardDescription className="text-sm">{service.description}</CardDescription>
+                </CardHeader>
+                <CardFooter className="pt-0">
+                  <Button variant="ghost" className="gap-2 p-0 h-auto text-primary group-hover:gap-3 transition-all">
+                    Get Started <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </CardFooter>
+              </Card>
+            );
+          })}
+        </div>
+
+        {recentOrders.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                Recent Service Orders
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {recentOrders.map((order) => (
+                  <div key={order.id} className="flex items-center justify-between p-3 rounded-lg border">
+                    <div>
+                      <p className="font-medium text-sm capitalize">{order.service_type?.replace(/_/g, ' ')}</p>
+                      <p className="text-xs text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">₦{order.price_paid?.toLocaleString()}</span>
+                      <Badge variant="secondary" className={
+                        order.status === 'completed' ? 'bg-success/10 text-success' :
+                        order.status === 'processing' ? 'bg-primary/10 text-primary' :
+                        'bg-warning/10 text-warning'
+                      }>
+                        {order.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </UserLayout>
   );
 }
