@@ -51,23 +51,9 @@ export function useAdminRole(): UseAdminRoleReturn {
   }, [user]);
 
   const bootstrapAdmin = useCallback(async (): Promise<boolean> => {
-    if (!user) return false;
-    
-    try {
-      const { data, error } = await supabase.rpc('bootstrap_first_admin');
-      if (error) {
-        console.error('Bootstrap admin error:', error);
-        return false;
-      }
-      if (data) {
-        await fetchRoles();
-      }
-      return data || false;
-    } catch (error) {
-      console.error('Bootstrap admin error:', error);
-      return false;
-    }
-  }, [user, fetchRoles]);
+    // Bootstrap removed for security — admin roles are assigned manually
+    return false;
+  }, []);
 
   useEffect(() => {
     fetchRoles();
