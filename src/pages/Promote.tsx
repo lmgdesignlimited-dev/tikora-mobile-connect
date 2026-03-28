@@ -52,6 +52,7 @@ interface Promotion {
   achieved_clicks: number | null;
   achieved_engagement: number | null;
   spent_amount: number | null;
+  rejection_reason: string | null;
   created_at: string;
 }
 
