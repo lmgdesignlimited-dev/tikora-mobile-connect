@@ -416,9 +416,13 @@ export default function CommandPromotions() {
               </DialogTitle>
               <DialogDescription>
                 {actionDialog.action === 'reject'
-                  ? 'Please provide a reason for rejection. The budget will be refunded.'
+                  ? 'Please provide a reason for rejection. The full budget will be refunded.'
                   : actionDialog.action === 'approve'
                   ? 'This will activate the promotion and start spending the budget.'
+                  : actionDialog.action === 'complete'
+                  ? 'This will mark the promotion as completed. Remaining budget stays with the platform.'
+                  : actionDialog.action === 'cancel'
+                  ? 'This will cancel the promotion and refund any remaining unspent budget.'
                   : `Are you sure you want to ${actionDialog.action} this promotion?`}
               </DialogDescription>
             </DialogHeader>
