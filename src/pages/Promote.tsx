@@ -62,6 +62,7 @@ export default function Promote() {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [cancelling, setCancelling] = useState<string | null>(null);
   
   // Form state
   const [videoUrl, setVideoUrl] = useState('');
