@@ -188,6 +188,59 @@ export default function Promote() {
     }
   };
 
+  const handleCancelPromotion = async (promoId: string) => {
+    setCancelling(promoId);
+    try {
+      const promo = promotions.find(p => p.id === promoId);
+      if (!promo) return;
+
+      const { error } = await supabase
+        .from('video_promotions')
+        .update({ status: 'cancelled' as any })
+        .eq('id', promoId);
+
+      if (error) throw error;
+
+      // Refund to wallet
+      const { error: walletError } = await supabase
+        .from('profiles')
+        .update({
+          wallet_balance: (profile?.wallet_balance || 0) + promo.budget
+        })
+        .eq('user_id', user?.id);
+
+      if (walletError) throw walletError;
+
+      // Log refund transaction
+      await supabase.from('wallet_transactions').insert({
+        user_id: user?.id,
+        transaction_type: 'refund',
+        amount: promo.budget,
+        description: `Refund: cancelled promotion "${promo.title}"`,
+        status: 'completed',
+        reference_id: `PROMO-CANCEL-${Date.now()}`
+      });
+
+      toast.success('Promotion cancelled. Budget refunded to your wallet.');
+      loadData();
+    } catch (error) {
+      console.error('Error cancelling promotion:', error);
+      toast.error('Failed to cancel promotion');
+    } finally {
+      setCancelling(null);
+    }
+  };
+
+  const getProgressPercent = (promo: Promotion) => {
+    if (promo.goal === 'views') {
+      return Math.min(100, ((promo.achieved_views || 0) / (promo.target_views || 1)) * 100);
+    }
+    if (promo.goal === 'clicks') {
+      return Math.min(100, ((promo.achieved_clicks || 0) / (promo.target_clicks || 1)) * 100);
+    }
+    return Math.min(100, ((promo.achieved_engagement || 0) / (promo.target_engagement || 1)) * 100);
+  };
+
   const getStatusColor = (status: PromotionStatus) => {
     switch (status) {
       case 'active': return 'bg-success/10 text-success border-success/20';
