@@ -604,8 +604,12 @@ export default function Promote() {
 
           <TabsContent value="my-promotions">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>My Promotions</CardTitle>
+                <Button variant="outline" size="sm" onClick={loadData} className="gap-2">
+                  <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                  Refresh
+                </Button>
               </CardHeader>
               <CardContent>
                 {loading ? (
@@ -637,9 +641,29 @@ export default function Promote() {
                               View Video
                             </a>
                           </div>
-                          <Badge className={getStatusColor(promo.status)}>
-                            {promo.status}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <Badge className={getStatusColor(promo.status)}>
+                              {promo.status}
+                            </Badge>
+                            {promo.status === 'pending' && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 text-destructive hover:text-destructive text-xs"
+                                onClick={() => handleCancelPromotion(promo.id)}
+                                disabled={cancelling === promo.id}
+                              >
+                                {cancelling === promo.id ? (
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  <>
+                                    <Ban className="h-3 w-3 mr-1" />
+                                    Cancel
+                                  </>
+                                )}
+                              </Button>
+                            )}
+                          </div>
                         </div>
 
                         <div className="grid grid-cols-3 gap-4 text-sm">
@@ -660,15 +684,43 @@ export default function Promote() {
                           </div>
                         </div>
 
-                        {promo.status === 'active' && (
-                          <div className="mt-4 pt-4 border-t">
+                        {/* Progress bar for active/completed promotions */}
+                        {(promo.status === 'active' || promo.status === 'completed') && (
+                          <div className="mt-4 pt-4 border-t space-y-2">
                             <div className="flex items-center justify-between text-sm">
                               <span className="text-muted-foreground">Progress</span>
                               <span className="text-primary font-medium">
-                                {promo.goal === 'views' && `${promo.achieved_views || 0}/${promo.target_views || 0} views`}
-                                {promo.goal === 'clicks' && `${promo.achieved_clicks || 0}/${promo.target_clicks || 0} clicks`}
-                                {promo.goal === 'engagement' && `${promo.achieved_engagement || 0}/${promo.target_engagement || 0} engagements`}
+                                {promo.goal === 'views' && `${(promo.achieved_views || 0).toLocaleString()}/${(promo.target_views || 0).toLocaleString()} views`}
+                                {promo.goal === 'clicks' && `${(promo.achieved_clicks || 0).toLocaleString()}/${(promo.target_clicks || 0).toLocaleString()} clicks`}
+                                {promo.goal === 'engagement' && `${(promo.achieved_engagement || 0).toLocaleString()}/${(promo.target_engagement || 0).toLocaleString()} engagements`}
                               </span>
+                            </div>
+                            <Progress value={getProgressPercent(promo)} className="h-2" />
+                            <p className="text-xs text-muted-foreground text-right">
+                              {Math.round(getProgressPercent(promo))}% complete
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Rejection reason */}
+                        {promo.status === 'rejected' && promo.rejection_reason && (
+                          <div className="mt-4 pt-4 border-t">
+                            <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
+                              <AlertTriangle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+                              <div>
+                                <p className="text-sm font-medium text-destructive">Rejection Reason</p>
+                                <p className="text-sm text-muted-foreground mt-1">{promo.rejection_reason}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Pending notice */}
+                        {promo.status === 'pending' && (
+                          <div className="mt-4 pt-4 border-t">
+                            <div className="flex items-center gap-2 text-sm text-warning">
+                              <Clock className="h-4 w-4" />
+                              <span>Under review — you'll be notified once approved</span>
                             </div>
                           </div>
                         )}
