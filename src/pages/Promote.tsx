@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Progress } from '@/components/ui/progress';
 import { 
   Video, 
   Play, 
@@ -25,7 +26,10 @@ import {
   Loader2,
   Link as LinkIcon,
   Upload,
-  ArrowRight
+  ArrowRight,
+  Ban,
+  AlertTriangle,
+  RefreshCw
 } from 'lucide-react';
 import { toast } from 'sonner';
 
