@@ -330,30 +330,72 @@ export default function CommandPromotions() {
                             </>
                           )}
                           {promotion.status === 'active' && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-8 w-8 p-0"
-                              onClick={() => {
-                                setSelectedPromotion(promotion);
-                                setActionDialog({ open: true, action: 'pause' });
-                              }}
-                            >
-                              <Pause className="h-4 w-4" />
-                            </Button>
+                            <>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0"
+                                onClick={() => {
+                                  setSelectedPromotion(promotion);
+                                  setActionDialog({ open: true, action: 'pause' });
+                                }}
+                                title="Pause"
+                              >
+                                <Pause className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0 text-success hover:text-success"
+                                onClick={() => {
+                                  setSelectedPromotion(promotion);
+                                  setActionDialog({ open: true, action: 'complete' });
+                                }}
+                                title="Mark Complete"
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                                onClick={() => {
+                                  setSelectedPromotion(promotion);
+                                  setActionDialog({ open: true, action: 'cancel' });
+                                }}
+                                title="Cancel & Refund"
+                              >
+                                <XCircle className="h-4 w-4" />
+                              </Button>
+                            </>
                           )}
                           {promotion.status === 'paused' && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-8 w-8 p-0 text-success"
-                              onClick={() => {
-                                setSelectedPromotion(promotion);
-                                setActionDialog({ open: true, action: 'approve' });
-                              }}
-                            >
-                              <Play className="h-4 w-4" />
-                            </Button>
+                            <>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0 text-success"
+                                onClick={() => {
+                                  setSelectedPromotion(promotion);
+                                  setActionDialog({ open: true, action: 'approve' });
+                                }}
+                                title="Resume"
+                              >
+                                <Play className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                                onClick={() => {
+                                  setSelectedPromotion(promotion);
+                                  setActionDialog({ open: true, action: 'cancel' });
+                                }}
+                                title="Cancel & Refund"
+                              >
+                                <XCircle className="h-4 w-4" />
+                              </Button>
+                            </>
                           )}
                         </div>
                       </TableCell>
