@@ -71,6 +71,7 @@ export default function Promote() {
   const [budget, setBudget] = useState('');
   const [goal, setGoal] = useState<PromotionGoal>('views');
   const [platform, setPlatform] = useState('tiktok');
+  const [activeTab, setActiveTab] = useState('choose-method');
 
   useEffect(() => {
     if (user?.id) {
