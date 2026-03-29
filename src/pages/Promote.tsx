@@ -71,6 +71,7 @@ export default function Promote() {
   const [budget, setBudget] = useState('');
   const [goal, setGoal] = useState<PromotionGoal>('views');
   const [platform, setPlatform] = useState('tiktok');
+  const [activeTab, setActiveTab] = useState('choose-method');
 
   useEffect(() => {
     if (user?.id) {
@@ -304,7 +305,7 @@ export default function Promote() {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="choose-method">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-6 flex flex-wrap h-auto gap-1">
             <TabsTrigger value="choose-method" className="gap-2">
               <Video className="h-4 w-4" />
@@ -323,10 +324,7 @@ export default function Promote() {
           <TabsContent value="choose-method">
             <div className="grid md:grid-cols-2 gap-6">
               {/* Option 1: Platform Boost */}
-              <Card className="border-primary/20 hover:shadow-lg transition-all cursor-pointer group" onClick={() => {
-                const tabTrigger = document.querySelector('[data-state][value="create"]') as HTMLElement;
-                tabTrigger?.click();
-              }}>
+              <Card className="border-primary/20 hover:shadow-lg transition-all cursor-pointer group" onClick={() => setActiveTab('create')}>
                 <CardHeader>
                   <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-3">
                     <Play className="h-7 w-7 text-primary" />
