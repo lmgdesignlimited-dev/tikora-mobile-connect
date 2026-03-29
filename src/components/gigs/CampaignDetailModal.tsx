@@ -326,6 +326,18 @@ export function CampaignDetailModal({ open, onOpenChange, campaign, onApply, tie
             </div>
           )}
 
+          {/* ═══════ Ads Promotion Section ═══════ */}
+          {payment > 0 && (
+            <>
+              <Separator />
+              <AdsPromotionSection
+                adBudget={Math.round(payment * 2)}
+                basePayment={payment}
+                platform={campaign.platform || 'TikTok'}
+              />
+            </>
+          )}
+
           {/* ═══════ Quality Video Guide ═══════ */}
           <Separator />
           <Card className="border-primary/20 bg-primary/5">
