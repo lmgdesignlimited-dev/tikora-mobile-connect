@@ -37,6 +37,7 @@ import {
   Megaphone,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { AdsPromotionSection } from './AdsPromotionSection';
 
 interface Campaign {
   id: string;
@@ -323,6 +324,18 @@ export function CampaignDetailModal({ open, onOpenChange, campaign, onApply, tie
                 </Badge>
               ))}
             </div>
+          )}
+
+          {/* ═══════ Ads Promotion Section ═══════ */}
+          {payment > 0 && (
+            <>
+              <Separator />
+              <AdsPromotionSection
+                adBudget={Math.round(payment * 2)}
+                basePayment={payment}
+                platform={campaign.platform || 'TikTok'}
+              />
+            </>
           )}
 
           {/* ═══════ Quality Video Guide ═══════ */}
