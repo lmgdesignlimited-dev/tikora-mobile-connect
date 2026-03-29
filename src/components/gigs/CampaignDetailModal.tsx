@@ -37,6 +37,7 @@ import {
   Megaphone,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { AdsPromotionSection } from './AdsPromotionSection';
 
 interface Campaign {
   id: string;
