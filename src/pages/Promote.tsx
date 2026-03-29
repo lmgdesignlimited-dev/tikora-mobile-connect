@@ -324,10 +324,7 @@ export default function Promote() {
           <TabsContent value="choose-method">
             <div className="grid md:grid-cols-2 gap-6">
               {/* Option 1: Platform Boost */}
-              <Card className="border-primary/20 hover:shadow-lg transition-all cursor-pointer group" onClick={() => {
-                const tabTrigger = document.querySelector('[data-state][value="create"]') as HTMLElement;
-                tabTrigger?.click();
-              }}>
+              <Card className="border-primary/20 hover:shadow-lg transition-all cursor-pointer group" onClick={() => setActiveTab('create')}>
                 <CardHeader>
                   <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-3">
                     <Play className="h-7 w-7 text-primary" />
